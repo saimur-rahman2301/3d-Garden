@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>A Garden For Her</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@200;300;400&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
@@ -27,7 +30,8 @@
             -webkit-user-select: none;
         }
 
-        body, html {
+        body,
+        html {
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -98,15 +102,18 @@
 
         .text-stage-title {
             font-family: 'Pinyon Script', cursive;
-            font-size: 3.5rem; /* Cursive font halke se badi rkhi h taaki behtareen read ho */
+            font-size: 3.5rem;
+            /* Cursive font halke se badi rkhi h taaki behtareen read ho */
             font-weight: 300;
             line-height: 1.1;
             color: #fef08a;
             text-shadow: 0 0 20px rgba(254, 240, 138, 0.35);
             opacity: 0;
-            clip-path: inset(0 100% 0 0); /* Left to right hand tracing wipe effect (Step 10) */
+            clip-path: inset(0 100% 0 0);
+            /* Left to right hand tracing wipe effect (Step 10) */
             transition: opacity 0.5s ease;
         }
+
         .text-stage-title.active {
             opacity: 1;
             clip-path: inset(0 0 0 0);
@@ -230,9 +237,17 @@
         }
 
         @keyframes textGradientShine {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Responsive UI Adjustments */
@@ -240,12 +255,15 @@
             .text-stage-title {
                 font-size: 1.7rem;
             }
+
             .text-stage-sub {
                 font-size: 0.85rem;
             }
+
             .intro-title {
                 font-size: 2.2rem;
             }
+
             .btn-premium {
                 padding: 12px 28px;
                 font-size: 0.75rem;
@@ -270,12 +288,15 @@
             pointer-events: none;
             transition: opacity 1.2s ease;
         }
+
         .letter-modal.active {
             opacity: 1;
             pointer-events: auto;
         }
+
         .letter-paper {
-            background: #fcf9f2; /* Textured luxurious warm-white cotton paper */
+            background: #fcf9f2;
+            /* Textured luxurious warm-white cotton paper */
             color: #1a1a1a;
             width: 90%;
             max-width: 500px;
@@ -288,16 +309,20 @@
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .letter-modal.active .letter-paper {
             transform: translateY(0);
         }
+
         .letter-title {
             font-size: 2rem;
             font-weight: 300;
             font-style: italic;
-            color: #b45309; /* Warm gold/amber accent */
+            color: #b45309;
+            /* Warm gold/amber accent */
             margin-bottom: 25px;
         }
+
         .letter-text {
             font-size: 1.15rem;
             line-height: 1.9;
@@ -307,6 +332,7 @@
             text-align: left;
             white-space: pre-line;
         }
+
         .btn-close-letter {
             background: #111318;
             color: #fcf9f2;
@@ -320,14 +346,16 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.4s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
+
         .btn-close-letter:hover {
             background: #3a3f4d;
             transform: translateY(-1px);
         }
     </style>
 </head>
+
 <body>
 
     <div id="webgl-container"></div>
@@ -351,9 +379,10 @@
             <h2 class="text-stage-title" id="stage-title">Some feelings are difficult to put into words.</h2>
             <p class="text-stage-sub" id="stage-sub">Some things begin quietly.</p>
         </div>
-        
+
         <div class="controls-box" style="display: flex; gap: 16px;">
-            <button class="btn-premium" id="btn-breeze" style="display: none; opacity: 0;" onclick="triggerPetalStorm()">
+            <button class="btn-premium" id="btn-breeze" style="display: none; opacity: 0;"
+                onclick="triggerPetalStorm()">
                 Summon Breeze
             </button>
             <button class="btn-premium" id="btn-next" onclick="nextStage()">
@@ -368,11 +397,12 @@
             <p class="letter-text" id="letter-text">
                 Every flower in this garden was planted with a thought of you.
                 Some feelings are indeed too deep for simple words, so I built this living space instead.
-                
-                Thank you for simply existing, for making my world brighter, and for being the most beautiful part of my story.
-                
+
+                Thank you for simply existing, for making my world brighter, and for being the most beautiful part of my
+                story.
+
                 This garden will always exist, just for you.
-                
+
                 With love, always.
             </p>
             <button class="btn-close-letter" onclick="closeLoveLetter()">Close Scroll</button>
@@ -393,7 +423,7 @@
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     this.ctx = new AudioContext();
-                    
+
                     // Wind Generator
                     const bufferSize = 2 * this.ctx.sampleRate;
                     const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -445,7 +475,7 @@
                 if (!this.ctx) return;
                 const frequencies = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50]; // Ethereal C-Major Pentatonic
                 const freq = frequencies[Math.floor(Math.random() * frequencies.length)];
-                
+
                 const t = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
@@ -471,7 +501,7 @@
             canvas.width = 256;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
-            
+
             // Base leaf gradient
             const grad = ctx.createLinearGradient(0, 512, 0, 0);
             grad.addColorStop(0, '#162e12');
@@ -485,7 +515,7 @@
             ctx.lineWidth = 3.5;
             ctx.shadowColor = '#0f200b';
             ctx.shadowBlur = 4;
-            
+
             // Main central vein
             ctx.beginPath();
             ctx.moveTo(128, 512);
@@ -507,7 +537,7 @@
                 ctx.quadraticCurveTo(176, y - 25, 241, y - 55);
                 ctx.stroke();
             }
-            
+
             const tex = new THREE.CanvasTexture(canvas);
             tex.wrapS = THREE.ClampToEdgeWrapping;
             tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -519,7 +549,7 @@
             canvas.width = 256;
             canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            
+
             // Soft radial glow gradient matching organic petals
             const grad = ctx.createRadialGradient(128, 220, 10, 128, 128, 140);
             grad.addColorStop(0, baseColor);
@@ -540,7 +570,7 @@
                     ctx.stroke();
                 }
             }
-            
+
             const tex = new THREE.CanvasTexture(canvas);
             tex.wrapS = THREE.ClampToEdgeWrapping;
             tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -572,7 +602,7 @@
             canvas.width = 128;
             canvas.height = 128;
             const ctx = canvas.getContext('2d');
-            
+
             // Radial gradient to simulate fluffy clouds/smoke
             const grad = ctx.createRadialGradient(64, 64, 8, 64, 64, 56);
             grad.addColorStop(0, 'rgba(230, 245, 240, 0.16)');
@@ -581,7 +611,7 @@
             grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 128, 128);
-            
+
             return new THREE.CanvasTexture(canvas);
         }
 
@@ -591,7 +621,7 @@
             canvas.width = 128;
             canvas.height = 128;
             const ctx = canvas.getContext('2d');
-            
+
             // Soft glowing ring gradient
             const grad = ctx.createRadialGradient(64, 64, 25, 64, 64, 60);
             grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
@@ -599,7 +629,7 @@
             grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.85)'); // Bright glowing peak
             grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.18)');
             grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            
+
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 128, 128);
             return new THREE.CanvasTexture(canvas);
@@ -608,7 +638,7 @@
         // Shared static textures
         const LEAF_TEXTURE = createLeafTexture();
         const GROUND_TEXTURE = createGroundTexture();
-        
+
         GROUND_TEXTURE.wrapS = THREE.RepeatWrapping;
         GROUND_TEXTURE.wrapT = THREE.RepeatWrapping;
         GROUND_TEXTURE.repeat.set(10, 10); // repeats 10 times to make soil fine-grained
@@ -617,79 +647,79 @@
             {
                 title: "Some feelings are difficult to put into words.",
                 sub: "Some things begin quietly.",
-                camPos: { x: 0, y: 1.5, z: 5.0 },
-                camLook: { x: 0, y: 0.7, z: 1.5 },
+                camPos: {x: 0, y: 1.5, z: 5.0},
+                camLook: {x: 0, y: 0.7, z: 1.5},
                 lightColor: 0xff4d5a, // Red Bloom Light
                 fogColor: 0x1a060c,   // Deep velvet dark red
                 skyHorizon: '#5e1322', // Deep crimson sunset glow 
                 sunIntensity: 1.8,
                 flowerType: 'rose',   // Red Flower
-                flowerPos: { x: 0, y: -0.8, z: 1.5 },
+                flowerPos: {x: 0, y: -0.8, z: 1.5},
                 fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'
             },
             {
                 title: "So sometimes they are planted instead.",
                 sub: "Without asking for attention.",
-                camPos: { x: -2.8, y: 1.3, z: 4.0 },
-                camLook: { x: -2.0, y: 0.8, z: 1.0 },
+                camPos: {x: -2.8, y: 1.3, z: 4.0},
+                camLook: {x: -2.0, y: 0.8, z: 1.0},
                 lightColor: 0xffaa00, // Yellow Bloom Light
                 fogColor: 0x1c1206,   // Deep amber/brown
                 skyHorizon: '#5c2a04', // Warm radiant orange sunset
                 sunIntensity: 2.0,
                 flowerType: 'tulip',  // Yellow Flower
-                flowerPos: { x: -2.0, y: -0.8, z: 1.0 },
+                flowerPos: {x: -2.0, y: -0.8, z: 1.0},
                 fColor: '#ffffe6', fGlow: '#ffaa00', pColor: '#ff0055'
             },
             {
                 title: "Every flower here carries a thought that was never spoken.",
                 sub: "But still manage to change everything.",
-                camPos: { x: 2.8, y: 1.6, z: 4.2 },
-                camLook: { x: 2.0, y: 0.9, z: 1.5 },
+                camPos: {x: 2.8, y: 1.6, z: 4.2},
+                camLook: {x: 2.0, y: 0.9, z: 1.5},
                 lightColor: 0x00ffff, // Cyan Bloom Light
                 fogColor: 0x061c22,   // Deep ocean teal
                 skyHorizon: '#08444a', // Glowing emerald/teal sunset 
                 sunIntensity: 2.2,
                 flowerType: 'lily',   // Cyan Flower
-                flowerPos: { x: 2.0, y: -0.8, z: 1.5 },
+                flowerPos: {x: 2.0, y: -0.8, z: 1.5},
                 fColor: '#eaffff', fGlow: '#00ffff', pColor: '#ccff00'
             },
             {
                 title: "Some people leave footprints in places they never visit again.",
                 sub: "One moment at a time.",
-                camPos: { x: -1.2, y: 1.4, z: 3.0 },
-                camLook: { x: -0.5, y: 0.8, z: -1.0 },
+                camPos: {x: -1.2, y: 1.4, z: 3.0},
+                camLook: {x: -0.5, y: 0.8, z: -1.0},
                 lightColor: 0xff3b6b, // Magenta-Red Flower Light
                 fogColor: 0x1d0614,   // Deep purple shadow
                 skyHorizon: '#4d0635', // Vibrant cherry twilight 
                 sunIntensity: 2.0,
                 flowerType: 'cherry', // Red Flower
-                flowerPos: { x: -0.5, y: -0.8, z: -1.0 },
+                flowerPos: {x: -0.5, y: -0.8, z: -1.0},
                 fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'
             },
             {
                 title: "And some gardens are created simply because someone existed.",
                 sub: "And before you realize it...",
-                camPos: { x: 1.8, y: 1.4, z: 2.8 },
-                camLook: { x: 0.6, y: 0.8, z: -1.5 },
+                camPos: {x: 1.8, y: 1.4, z: 2.8},
+                camLook: {x: 0.6, y: 0.8, z: -1.5},
                 lightColor: 0xffa200, // Yellow-Orange Flower Light
                 fogColor: 0x1d1003,   // Rich sunset clay
                 skyHorizon: '#5e2908', // Glowing fiery sunset peach 
                 sunIntensity: 2.4,
                 flowerType: 'lavender', // Yellow Flower
-                flowerPos: { x: 0.6, y: -0.8, z: -1.5 },
+                flowerPos: {x: 0.6, y: -0.8, z: -1.5},
                 fColor: '#ffffe6', fGlow: '#ffcc00', pColor: '#ff5500'
             },
             {
                 title: "Thank you for being part of the story.",
                 sub: "The garden exists.",
-                camPos: { x: 0, y: 2.4, z: 6.8 },
-                camLook: { x: 0, y: 0.8, z: -0.5 },
+                camPos: {x: 0, y: 2.4, z: 6.8},
+                camLook: {x: 0, y: 0.8, z: -0.5},
                 lightColor: 0x00ffff, // Epic King Cyan Light
                 fogColor: 0x03121d,   // Twilight midnight blue
                 skyHorizon: '#0c3254', // Glowing twilight indigo/midnight blue 
                 sunIntensity: 2.2,
                 flowerType: 'wild',   // Tallest Cyan Flower - The King
-                flowerPos: { x: 0, y: -0.8, z: -1.0 },
+                flowerPos: {x: 0, y: -0.8, z: -1.0},
                 fColor: '#eaffff', fGlow: '#00ffff', pColor: '#ccff00'
             }
         ];
@@ -699,12 +729,12 @@
 
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(STAGES[0].fogColor, 0.045); 
+        scene.fog = new THREE.FogExp2(STAGES[0].fogColor, 0.045);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
         camera.position.set(0, 1.5, 9);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+        const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false, powerPreference: "high-performance"});
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
@@ -720,9 +750,9 @@
         // UnrealBloomPass parameters: (resolution, strength, radius, threshold)
         const bloomPass = new THREE.UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            0.4,   
-            0.3,   
-            0.8   
+            0.4,
+            0.3,
+            0.8
         );
 
         const composer = new THREE.EffectComposer(renderer);
@@ -740,17 +770,17 @@
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 2048; // Upgraded shadow map size
         sunLight.shadow.mapSize.height = 2048;
-        
-        
+
+
         sunLight.shadow.camera.left = -6;
         sunLight.shadow.camera.right = 6;
         sunLight.shadow.camera.top = 6;
         sunLight.shadow.camera.bottom = -6;
         sunLight.shadow.camera.near = 0.5;
         sunLight.shadow.camera.far = 30;
-        
-        sunLight.shadow.bias = -0.001;  
-        sunLight.shadow.normalBias = 0.03; 
+
+        sunLight.shadow.bias = -0.001;
+        sunLight.shadow.normalBias = 0.03;
         scene.add(sunLight);
 
         // Volumetric Sun Beam Mesh (Bioluminescent forest rays)
@@ -787,8 +817,8 @@
 
         // Dynamic Sky Color controller state (Step 9)
         const skyColors = {
-            zenith: new THREE.Color('#0a0e19'), 
-            horizon: new THREE.Color('#15111b') 
+            zenith: new THREE.Color('#0a0e19'),
+            horizon: new THREE.Color('#15111b')
         };
 
         function redrawSkyDome() {
@@ -806,16 +836,16 @@
 
         const starCount = 180;
         const starPositions = [];
-        const R = 43.0; 
+        const R = 43.0;
 
         for (let i = 0; i < starCount; i++) {
-            const theta = Math.random() * Math.PI; 
-            const phi = Math.acos((Math.random() - 0.5) * 2); 
-            
+            const theta = Math.random() * Math.PI;
+            const phi = Math.acos((Math.random() - 0.5) * 2);
+
             const x = R * Math.sin(theta) * Math.sin(phi);
             const y = Math.abs(R * Math.cos(phi)) * 0.85 + 2.0; // Higher up
             const z = -Math.abs(R * Math.sin(theta) * Math.cos(phi)); // Z < 0
-            
+
             starPositions.push(x, y, z);
         }
 
@@ -828,14 +858,14 @@
         for (let i = 0; i <= 16; i++) {
             const t = (i / 16) * Math.PI * 2;
             const hx = 16 * Math.pow(Math.sin(t), 3) * heartScale;
-            const hy = (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * heartScale;
-            
+            const hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * heartScale;
+
             const px = centerX + hx;
             const py = centerY + hy;
-            const pz = -Math.sqrt(R*R - px*px - py*py);
+            const pz = -Math.sqrt(R * R - px * px - py * py);
             const pt = new THREE.Vector3(px, py, pz);
             heartPoints.push(pt);
-            
+
             // Constellation stars ko general star list me add kiya
             starPositions.push(px, py, pz);
         }
@@ -926,12 +956,12 @@
 
         // Ground / Landscape (Soil)
 
-        
+
 
         // Ground / Landscape (Soil)
         const terrainGeo = new THREE.PlaneGeometry(30, 30, 64, 64);
         terrainGeo.rotateX(-Math.PI / 2);
-        
+
         // Procedurally perturb ground plane vertices to form soft luxury contours
         const posAttr = terrainGeo.attributes.position;
         for (let i = 0; i < posAttr.count; i++) {
@@ -954,7 +984,7 @@
 
         function mergeGeometries(geos) {
             let totalVertices = 0;
-            geos.forEach(g => { totalVertices += g.attributes.position.count; });
+            geos.forEach(g => {totalVertices += g.attributes.position.count;});
 
             const positions = new Float32Array(totalVertices * 3);
             const normals = new Float32Array(totalVertices * 3);
@@ -1009,24 +1039,24 @@
             const stem1 = new THREE.PlaneGeometry(0.008, 0.28);
             stem1.translate(0, 0.14, 0);
             const stem2 = stem1.clone().rotateY(Math.PI / 2);
-            
+
             // Flower head petals
             const petal1 = new THREE.PlaneGeometry(0.05, 0.05);
             petal1.rotateX(Math.PI / 2);
             petal1.translate(0, 0.28, 0);
             const petal2 = petal1.clone().rotateY(Math.PI / 4);
-            
+
             return mergeGeometries([stem1, stem2, petal1, petal2]);
         }
 
-        const grassCount = 1000; 
+        const grassCount = 1000;
         const grassGeo = createGrassClusterGeometry();
         const grassMat = new THREE.MeshPhysicalMaterial({
-            color: 0x012415,           
-            roughness: 0.35,            
+            color: 0x012415,
+            roughness: 0.35,
             side: THREE.DoubleSide,
-            transmission: 0.25,        
-            clearcoat: 0.2,               
+            transmission: 0.25,
+            clearcoat: 0.2,
             clearcoatRoughness: 0.1
         });
 
@@ -1158,7 +1188,7 @@
             const y = 0.2 + Math.random() * 2.2;
             const z = (Math.random() - 0.5) * 8;
             mesh.position.set(x, y, z);
-            
+
             firefliesGroup.add(mesh);
 
             fireflies.push({
@@ -1224,39 +1254,39 @@
             side: THREE.DoubleSide
         });
         const rippleMesh = new THREE.Mesh(rippleGeo, rippleMat);
-        rippleMesh.rotation.x = -Math.PI / 2; 
-        rippleMesh.position.set(0, -0.75, 0); 
+        rippleMesh.rotation.x = -Math.PI / 2;
+        rippleMesh.position.set(0, -0.75, 0);
         scene.add(rippleMesh);
 
         let isRippleAnimating = false;
         function triggerFlowerRipple() {
             if (isRippleAnimating || isTransitioning) return;
             isRippleAnimating = true;
-            
+
             const stage = STAGES[currentStageIndex];
-            
+
             rippleMesh.position.set(stage.flowerPos.x, -0.75, stage.flowerPos.z);
             rippleMesh.material.color.set(stage.fGlow);
             rippleMesh.scale.set(0.1, 0.1, 1);
             rippleMesh.material.opacity = 0.85;
-            
+
             gsap.timeline({
                 onComplete: () => {
                     isRippleAnimating = false;
                     rippleMesh.material.opacity = 0;
                 }
             })
-            .to(rippleMesh.scale, {
-                x: 10.0,
-                y: 10.0,
-                duration: 1.8,
-                ease: "power1.out"
-            }, 0)
-            .to(rippleMesh.material, {
-                opacity: 0,
-                duration: 1.8,
-                ease: "power2.out"
-            }, 0);
+                .to(rippleMesh.scale, {
+                    x: 10.0,
+                    y: 10.0,
+                    duration: 1.8,
+                    ease: "power1.out"
+                }, 0)
+                .to(rippleMesh.material, {
+                    opacity: 0,
+                    duration: 1.8,
+                    ease: "power2.out"
+                }, 0);
         }
 
         container.addEventListener('pointerdown', (e) => {
@@ -1266,17 +1296,17 @@
         function createHeartGeometry() {
             const x = 0, y = 0;
             const heartShape = new THREE.Shape();
-            heartShape.moveTo( x + 5, y + 5 );
-            heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y + 9, x, y + 9 );
-            heartShape.bezierCurveTo( x - 6, y + 9, x - 6, y + 2, x - 6, y + 2 );
-            heartShape.bezierCurveTo( x - 6, y - 2, x - 2, y - 7, x + 5, y - 11 );
-            heartShape.bezierCurveTo( x + 12, y - 7, x + 16, y - 2, x + 16, y + 2 );
-            heartShape.bezierCurveTo( x + 16, y + 2, x + 16, y + 9, x + 10, y + 9 );
-            heartShape.bezierCurveTo( x + 7, y + 9, x + 5, y + 5, x + 5, y + 5 );
+            heartShape.moveTo(x + 5, y + 5);
+            heartShape.bezierCurveTo(x + 5, y + 5, x + 4, y + 9, x, y + 9);
+            heartShape.bezierCurveTo(x - 6, y + 9, x - 6, y + 2, x - 6, y + 2);
+            heartShape.bezierCurveTo(x - 6, y - 2, x - 2, y - 7, x + 5, y - 11);
+            heartShape.bezierCurveTo(x + 12, y - 7, x + 16, y - 2, x + 16, y + 2);
+            heartShape.bezierCurveTo(x + 16, y + 2, x + 16, y + 9, x + 10, y + 9);
+            heartShape.bezierCurveTo(x + 7, y + 9, x + 5, y + 5, x + 5, y + 5);
 
             const geo = new THREE.ShapeGeometry(heartShape);
             geo.center(); // Center pivot
-            geo.scale(0.0035, 0.0035, 1.0); 
+            geo.scale(0.0035, 0.0035, 1.0);
             return geo;
         }
 
@@ -1285,7 +1315,7 @@
         const petalMat = new THREE.MeshStandardMaterial({
             color: 0xff7ea2, // Soft magical pink
             emissive: new THREE.Color(0xff4a75),
-            emissiveIntensity: 0.25, 
+            emissiveIntensity: 0.25,
             side: THREE.DoubleSide,
             roughness: 0.5
         });
@@ -1319,14 +1349,14 @@
                 this.type = type;
                 this.growth = 0.0;
                 this.windOffset = Math.random() * 100;
-                
-                this.petals = [];  
+
+                this.petals = [];
                 this.stems = [];
                 this.leaves = [];
                 this.anthers = [];
-                
+
                 this.stageConfig = STAGES.find(s => s.flowerType === type) || STAGES[0];
-                
+
                 this.build();
                 scene.add(this.group);
             }
@@ -1352,7 +1382,7 @@
                     pos.setZ(i, creasedZ);
                 }
                 geo.computeVertexNormals();
-                geo.translate(0, length / 2, 0); 
+                geo.translate(0, length / 2, 0);
                 return geo;
             }
 
@@ -1380,7 +1410,7 @@
 
             // Generate beautiful fallen petals lying randomly on the soil mound (Step 6)
             createFallenPetals(targetGroup, colorHex) {
-                const count = 5 + Math.floor(Math.random() * 4); 
+                const count = 5 + Math.floor(Math.random() * 4);
                 const petalGeo = new THREE.PlaneGeometry(0.04, 0.06);
                 const petalMat = new THREE.MeshStandardMaterial({
                     color: new THREE.Color(colorHex),
@@ -1390,22 +1420,22 @@
 
                 for (let i = 0; i < count; i++) {
                     const petal = new THREE.Mesh(petalGeo, petalMat);
-                    
+
                     const angle = Math.random() * Math.PI * 2;
                     const r = 0.08 + Math.random() * 0.28;
-                    
+
                     const x = Math.cos(angle) * r;
                     const z = Math.sin(angle) * r;
-                    const y = 0.035 - (r * 0.04); 
+                    const y = 0.035 - (r * 0.04);
 
                     petal.position.set(x, y, z);
-                    
+
                     petal.rotation.set(
-                        -Math.PI / 2 + (Math.random() - 0.5) * 0.2, 
-                        Math.random() * Math.PI * 2,               
+                        -Math.PI / 2 + (Math.random() - 0.5) * 0.2,
+                        Math.random() * Math.PI * 2,
                         (Math.random() - 0.5) * 0.2
                     );
-                    
+
                     petal.castShadow = true;
                     petal.receiveShadow = true;
                     targetGroup.add(petal);
@@ -1415,7 +1445,7 @@
             build() {
                 // Ground organic soil mound
                 const moundGeo = new THREE.CylinderGeometry(0.2, 0.35, 0.06, 16);
-                const moundMat = new THREE.MeshStandardMaterial({ color: 0x06080b, roughness: 0.95 });
+                const moundMat = new THREE.MeshStandardMaterial({color: 0x06080b, roughness: 0.95});
                 const mound = new THREE.Mesh(moundGeo, moundMat);
                 mound.position.y = 0.02;
                 mound.receiveShadow = true;
@@ -1458,12 +1488,12 @@
                 const leafGeo = this.createLeafGeo(0.15, 0.32);
                 const leafMeshMat = new THREE.MeshPhysicalMaterial({
                     map: leafTex,
-                    roughness: 0.35,             
+                    roughness: 0.35,
                     side: THREE.DoubleSide,
                     emissive: 0x002211,
-                    emissiveIntensity: 0.05,     
-                    transmission: 0.3,            
-                    clearcoat: 0.25,              
+                    emissiveIntensity: 0.05,
+                    transmission: 0.3,
+                    clearcoat: 0.25,
                     clearcoatRoughness: 0.1,
                     ior: 1.35
                 });
@@ -1471,13 +1501,13 @@
                 // Petiole woody cylinder geometry
                 const petioleGeo = new THREE.CylinderGeometry(0.006, 0.008, 0.04, 8);
                 petioleGeo.rotateX(Math.PI / 2);
-                const petioleMat = new THREE.MeshStandardMaterial({ color: 0x1b3a1a, roughness: 0.8 });
+                const petioleMat = new THREE.MeshStandardMaterial({color: 0x1b3a1a, roughness: 0.8});
 
                 // Opposite Node Generation (Symmetric bilateral leaves at each level like the reference)
                 const leafNodes = [
-                    { height: 0.32, angle: 0.2 },
-                    { height: 0.62, angle: 1.8 }, // Rotated for natural layered depth
-                    { height: 0.92, angle: 3.4 }
+                    {height: 0.32, angle: 0.2},
+                    {height: 0.62, angle: 1.8}, // Rotated for natural layered depth
+                    {height: 0.92, angle: 3.4}
                 ];
 
                 for (let i = 0; i < leafNodes.length; i++) {
@@ -1486,7 +1516,7 @@
 
                     angles.forEach(angle => {
                         const leafGroup = new THREE.Group();
-                        
+
                         const stemOffset = this.getStemOffset(node.height, stemHeight);
                         leafGroup.position.set(stemOffset, node.height, 0);
                         leafGroup.rotation.y = angle;
@@ -1561,18 +1591,18 @@
                 auraPlane.position.set(0, 0.25 * scale, -0.06);
                 auraPlane.scale.set(0.01, 0.01, 0.01);
                 targetGroup.add(auraPlane);
-                this.petals.push({ mesh: auraPlane, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
+                this.petals.push({mesh: auraPlane, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
             }
 
             // Filament & Anther Stamens Helper (Thread-like pollen stalks)
             createStamens(targetGroup, scale, colorHex) {
                 const count = 6; // Standard 6 stamens for lilies/tulips
-                const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(colorHex) });
+                const mat = new THREE.MeshBasicMaterial({color: new THREE.Color(colorHex)});
                 const stamenLength = 0.24 * scale;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
-                    
+
                     // Thin tube filament
                     const filGeo = new THREE.CylinderGeometry(0.003, 0.003, stamenLength, 8);
                     filGeo.translate(0, stamenLength / 2, 0);
@@ -1613,9 +1643,9 @@
                         side: THREE.DoubleSide,
                         emissive: new THREE.Color(this.stageConfig.fGlow),
                         emissiveIntensity: 0.03, // Kam kiya taaki textured details wapas aa sakein
-                        transmission: 0.4,       
-                        clearcoat: 0.1,          
-                        ior: 1.33                
+                        transmission: 0.4,
+                        clearcoat: 0.1,
+                        ior: 1.33
                     });
 
                     for (let p = 0; p < count; p++) {
@@ -1628,7 +1658,7 @@
                         petal.castShadow = true;
                         targetGroup.add(petal);
 
-                        this.petals.push({ mesh: petal, targetScale: new THREE.Vector3(1, 1.42, 0.55), layer: l });
+                        this.petals.push({mesh: petal, targetScale: new THREE.Vector3(1, 1.42, 0.55), layer: l});
                     }
                 }
                 this.createStamens(targetGroup, scale, this.stageConfig.pColor);
@@ -1639,7 +1669,7 @@
                 const count = 3;
                 const r = 0.15 * scale;
                 const h = 0.33 * scale;
-                
+
                 // Deep spoon-curvature geometry
                 const geo = this.createPetalGeo(r * 1.8, h, 0.16, 2.5);
 
@@ -1665,7 +1695,7 @@
                         petal.castShadow = true;
                         targetGroup.add(petal);
 
-                        this.petals.push({ mesh: petal, targetScale: new THREE.Vector3(0.9, 1.55, 0.9), layer: l });
+                        this.petals.push({mesh: petal, targetScale: new THREE.Vector3(0.9, 1.55, 0.9), layer: l});
                     }
                 }
                 this.createStamens(targetGroup, scale, this.stageConfig.pColor);
@@ -1676,7 +1706,7 @@
                 const count = 6;
                 const r = 0.13 * scale;
                 const h = 0.68 * scale;
-                
+
                 // Highly curved flared lily tepals curling backward gracefully
                 const geo = this.createPetalGeo(r, h, 0.28, 0.8);
 
@@ -1701,7 +1731,7 @@
                     petal.castShadow = true;
                     targetGroup.add(petal);
 
-                    this.petals.push({ mesh: petal, targetScale: new THREE.Vector3(1, 1, 1), layer: p % 2 });
+                    this.petals.push({mesh: petal, targetScale: new THREE.Vector3(1, 1, 1), layer: p % 2});
                 }
                 this.createStamens(targetGroup, scale, this.stageConfig.pColor);
             }
@@ -1711,7 +1741,7 @@
                 const count = 5;
                 const r = 0.12 * scale;
                 const h = 0.16 * scale;
-                
+
                 // Tapered cherry blossom lobes creased down the spine
                 const geo = this.createPetalGeo(r, h, 0.08, 1.2);
 
@@ -1736,7 +1766,7 @@
                     petal.castShadow = true;
                     targetGroup.add(petal);
 
-                    this.petals.push({ mesh: petal, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
+                    this.petals.push({mesh: petal, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
                 }
                 this.createStamens(targetGroup, scale, this.stageConfig.pColor);
             }
@@ -1746,7 +1776,7 @@
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: 0x1d1003, // Rich dark earth brown
                     emissive: 0x2c1404,
-                    emissiveIntensity: 0.1, 
+                    emissiveIntensity: 0.1,
                     roughness: 0.95
                 });
                 const core = new THREE.Mesh(coreGeo, coreMat);
@@ -1754,7 +1784,7 @@
                 core.scale.set(0.01, 0.01, 0.01);
                 core.castShadow = true;
                 targetGroup.add(core);
-                this.petals.push({ mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
+                this.petals.push({mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
 
                 const sunflowerTex = createPetalTexture('#3d1c02', '#ffd700', '#ff8c00');
                 const petalCount = 24;
@@ -1767,7 +1797,7 @@
                     roughness: 0.42,
                     side: THREE.DoubleSide,
                     emissive: new THREE.Color('#ffaa00'),
-                    emissiveIntensity: 0.04, 
+                    emissiveIntensity: 0.04,
                     transmission: 0.5,
                     clearcoat: 0.08,
                     ior: 1.33
@@ -1777,15 +1807,15 @@
                     const petal = new THREE.Mesh(geo, petalMat);
                     const angle = (p / petalCount) * Math.PI * 2;
                     const offsetRadius = (p % 2 === 0 ? 0.065 : 0.075) * scale;
-                    
+
                     petal.position.set(Math.cos(angle) * offsetRadius, 0.02, Math.sin(angle) * offsetRadius);
                     petal.rotation.y = -angle;
-                    petal.rotation.x = p % 2 === 0 ? 0.12 : 0.22; 
+                    petal.rotation.x = p % 2 === 0 ? 0.12 : 0.22;
                     petal.scale.set(0.01, 0.01, 0.01);
                     petal.castShadow = true;
                     targetGroup.add(petal);
 
-                    this.petals.push({ mesh: petal, targetScale: new THREE.Vector3(1.0, 1.0, 1.2), layer: 1 });
+                    this.petals.push({mesh: petal, targetScale: new THREE.Vector3(1.0, 1.0, 1.2), layer: 1});
                 }
             }
 
@@ -1803,13 +1833,13 @@
                 core.scale.set(0.01, 0.01, 0.01);
                 core.castShadow = true;
                 targetGroup.add(core);
-                this.petals.push({ mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
+                this.petals.push({mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
 
                 const sunflowerTex = createPetalTexture('#444444', this.stageConfig.fColor, this.stageConfig.fGlow);
                 const petalCount = 24;
                 const r = 0.04 * scale;
                 const h = 0.35 * scale;
-                const geo = this.createPetalGeo(r, h, 0.06, 1.8); 
+                const geo = this.createPetalGeo(r, h, 0.06, 1.8);
 
                 const petalMat = new THREE.MeshPhysicalMaterial({
                     map: sunflowerTex,
@@ -1826,7 +1856,7 @@
                     const petal = new THREE.Mesh(geo, petalMat);
                     const angle = (p / petalCount) * Math.PI * 2;
                     const offsetRadius = (p % 2 === 0 ? 0.065 : 0.075) * scale;
-                    
+
                     petal.position.set(Math.cos(angle) * offsetRadius, 0.02, Math.sin(angle) * offsetRadius);
                     petal.rotation.y = -angle;
                     petal.rotation.x = p % 2 === 0 ? 0.12 : 0.22; // Layered outer drop angle
@@ -1834,14 +1864,14 @@
                     petal.castShadow = true;
                     targetGroup.add(petal);
 
-                    this.petals.push({ mesh: petal, targetScale: new THREE.Vector3(1.0, 1.0, 1.2), layer: 1 });
+                    this.petals.push({mesh: petal, targetScale: new THREE.Vector3(1.0, 1.0, 1.2), layer: 1});
                 }
             }
 
             // Cinematic Multi-Stage Growth Sequence: Stem -> Leaves -> Petals
             updateGrowth(progress) {
                 this.growth = progress;
-                
+
                 if (progress > 0.0) {
                     const stemScaleY = Math.min(progress / 0.45, 1.0);
                     this.group.scale.set(1.0, stemScaleY, 1.0);
@@ -1856,7 +1886,7 @@
 
                     if (progress > 0.45) {
                         const bloomProgress = (progress - 0.45) / 0.55;
-                        
+
                         this.petals.forEach(p => {
                             const layerDelay = p.layer * 0.06;
                             const pProgress = Math.max(0, Math.min((bloomProgress - layerDelay) / (1.0 - layerDelay), 1.0));
@@ -1877,19 +1907,19 @@
 
             sway(time) {
                 if (this.growth <= 0.0) return;
-                const windMultiplier = 1.0 + windStormProgress * 3.5; 
-                const windSpeed = 1.35; 
+                const windMultiplier = 1.0 + windStormProgress * 3.5;
+                const windSpeed = 1.35;
                 const wave = Math.sin(time * windSpeed + this.windOffset);
                 this.group.rotation.z = wave * (0.045 * windMultiplier) * this.growth;
                 this.group.rotation.x = Math.cos(time * windSpeed + this.windOffset) * (0.025 * windMultiplier) * this.growth;
                 this.mainHead.rotation.z = wave * 0.015 * this.growth;
 
                 this.leaves.forEach((leaf, idx) => {
-                    const localSpeed = 3.2 + idx * 0.4; 
+                    const localSpeed = 3.2 + idx * 0.4;
                     const waveZ = Math.sin(time * localSpeed + this.windOffset + idx * 2.0) * 0.08 * this.growth;
                     const waveX = Math.cos(time * (localSpeed - 0.5) + this.windOffset + idx) * 0.05 * this.growth;
                     leaf.rotation.z = waveZ;
-                    leaf.rotation.x = (Math.PI / 2.4) + waveX; 
+                    leaf.rotation.x = (Math.PI / 2.4) + waveX;
                 });
             }
         }
@@ -1900,21 +1930,21 @@
             const posX = stg.flowerPos.x;
             const posY = stg.flowerPos.y;
             const posZ = stg.flowerPos.z;
-            
+
             const fl = new ProceduralFlower(stg.flowerType, new THREE.Vector3(posX, posY, posZ));
             flowers.push(fl);
         });
 
         const extraRoses = [];
         const extraRoseConfigs = [
-            { pos: new THREE.Vector3(-1.1, -0.8, 0.4), color: '#ffe6eb', glow: '#ff0055' },
-            { pos: new THREE.Vector3(1.1, -0.8, 0.4), color: '#ffe6eb', glow: '#ff0055' },
-            { pos: new THREE.Vector3(0, -0.8, 0.1), color: '#ffb7c5', glow: '#ff3b6b' }
+            {pos: new THREE.Vector3(-1.1, -0.8, 0.4), color: '#ffe6eb', glow: '#ff0055'},
+            {pos: new THREE.Vector3(1.1, -0.8, 0.4), color: '#ffe6eb', glow: '#ff0055'},
+            {pos: new THREE.Vector3(0, -0.8, 0.1), color: '#ffb7c5', glow: '#ff3b6b'}
         ];
 
         extraRoseConfigs.forEach(cfg => {
             const fl = new ProceduralFlower('rose', cfg.pos);
-            fl.stageConfig = { fColor: cfg.color, fGlow: cfg.glow, pColor: '#ffff00' };
+            fl.stageConfig = {fColor: cfg.color, fGlow: cfg.glow, pColor: '#ffff00'};
             fl.updateGrowth(0.0);
             extraRoses.push(fl);
         });
@@ -1949,17 +1979,19 @@
         function triggerStage(index) {
             currentStageIndex = index;
             isTransitioning = true;
-            
+
             const stage = STAGES[index];
             const activeFlower = flowers[index];
 
-            gsap.to("#btn-next", { opacity: 0, duration: 0.5, onComplete: () => {
-                document.getElementById("btn-next").style.pointerEvents = "none";
-            }});
-            
+            gsap.to("#btn-next", {
+                opacity: 0, duration: 0.5, onComplete: () => {
+                    document.getElementById("btn-next").style.pointerEvents = "none";
+                }
+            });
+
             document.getElementById("stage-title").classList.remove("active");
-            gsap.to("#stage-title", { opacity: 0, duration: 0.5 });
-            gsap.to("#stage-sub", { opacity: 0, y: 20, duration: 0.8 });
+            gsap.to("#stage-title", {opacity: 0, duration: 0.5});
+            gsap.to("#stage-sub", {opacity: 0, y: 20, duration: 0.8});
 
             targetPanOffset.set(stage.camLook.x, stage.camLook.y, stage.camLook.z);
 
@@ -1971,7 +2003,7 @@
                 ease: "power2.inOut"
             });
 
-            const tempLookTarget = { x: camera.userData.lookX || 0, y: camera.userData.lookY || 0, z: camera.userData.lookZ || 0 };
+            const tempLookTarget = {x: camera.userData.lookX || 0, y: camera.userData.lookY || 0, z: camera.userData.lookZ || 0};
             gsap.to(tempLookTarget, {
                 x: stage.camLook.x,
                 y: stage.camLook.y,
@@ -2025,7 +2057,7 @@
                     });
 
                     // Upgraded multi-phase growth timeline
-                    const growthObj = { progress: 0.0 };
+                    const growthObj = {progress: 0.0};
                     gsap.to(growthObj, {
                         progress: 1.0,
                         duration: 8.5,
@@ -2035,24 +2067,24 @@
                         },
                         onComplete: () => {
                             document.getElementById("stage-sub").innerText = stage.sub;
-                            gsap.to("#stage-sub", { opacity: 1, y: 0, duration: 1.5 });
+                            gsap.to("#stage-sub", {opacity: 1, y: 0, duration: 1.5});
 
                             isTransitioning = false;
-                            
+
                             if (currentStageIndex < STAGES.length - 1) {
                                 document.getElementById("btn-next").innerText = "Walk Forward";
                                 document.getElementById("btn-next").style.pointerEvents = "auto";
-                                gsap.to("#btn-next", { opacity: 1, duration: 1.0 });
+                                gsap.to("#btn-next", {opacity: 1, duration: 1.0});
                             } else {
                                 document.getElementById("btn-next").innerText = "Open Her Scroll";
                                 document.getElementById("btn-next").style.pointerEvents = "auto";
-                                gsap.to("#btn-next", { opacity: 1, duration: 1.5 });
+                                gsap.to("#btn-next", {opacity: 1, duration: 1.5});
                                 document.getElementById("btn-next").onclick = openLoveLetter;
                                 document.getElementById("btn-breeze").style.display = "inline-block";
-                                document.getElementById("btn-breeze").style.pointerEvents = "auto"; 
-                                gsap.to("#btn-breeze", { opacity: 1, duration: 1.5 });
-                                
-                                const climaxGrowth = { progress: 0.0 };
+                                document.getElementById("btn-breeze").style.pointerEvents = "auto";
+                                gsap.to("#btn-breeze", {opacity: 1, duration: 1.5});
+
+                                const climaxGrowth = {progress: 0.0};
                                 gsap.to(climaxGrowth, {
                                     progress: 1.0,
                                     duration: 8.5,
@@ -2063,19 +2095,19 @@
                                         });
                                     }
                                 });
-                                
+
                                 const dx = camera.position.x - targetPanOffset.x;
                                 const dy = camera.position.y - targetPanOffset.y;
                                 const dz = camera.position.z - targetPanOffset.z;
-                                targetOrbitRadius = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                                targetOrbitRadius = Math.sqrt(dx * dx + dy * dy + dz * dz);
                                 targetOrbitTheta = Math.atan2(dx, dz);
                                 targetOrbitPhi = Math.acos(dy / targetOrbitRadius);
-                                
+
                                 orbitRadius = targetOrbitRadius;
                                 orbitTheta = targetOrbitTheta;
                                 orbitPhi = targetOrbitPhi;
                                 panOffset.copy(targetPanOffset);
-                                
+
                                 freeExploreMode = true;
                                 setupFreeExploreListeners();
                             }
@@ -2099,7 +2131,7 @@
 
                 targetOrbitTheta -= dx * 0.005;
                 targetOrbitPhi = Math.max(0.1, Math.min(Math.PI / 2.1, targetOrbitPhi - dy * 0.005));
-                
+
                 lastPointerX = e.clientX;
                 lastPointerY = e.clientY;
             });
@@ -2120,11 +2152,11 @@
                 } else if (e.touches.length === 2) {
                     const dx = e.touches[0].clientX - e.touches[1].clientX;
                     const dy = e.touches[0].clientY - e.touches[1].clientY;
-                    initialTouchDist = Math.sqrt(dx*dx + dy*dy);
+                    initialTouchDist = Math.sqrt(dx * dx + dy * dy);
                     lastPointerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                     lastPointerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 }
-            }, { passive: true });
+            }, {passive: true});
 
             window.addEventListener('touchmove', (e) => {
                 if (!isPointerDragging) return;
@@ -2133,18 +2165,18 @@
                     const dy = e.touches[0].clientY - lastPointerY;
                     targetOrbitTheta -= dx * 0.006;
                     targetOrbitPhi = Math.max(0.1, Math.min(Math.PI / 2.1, targetOrbitPhi - dy * 0.006));
-                    
+
                     lastPointerX = e.touches[0].clientX;
                     lastPointerY = e.touches[0].clientY;
                 } else if (e.touches.length === 2) {
                     const dx = e.touches[0].clientX - e.touches[1].clientX;
                     const dy = e.touches[0].clientY - e.touches[1].clientY;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const dist = Math.sqrt(dx * dx + dy * dy);
                     const deltaDist = initialTouchDist - dist;
                     targetOrbitRadius = Math.max(2.0, Math.min(15.0, targetOrbitRadius + deltaDist * 0.015));
                     initialTouchDist = dist;
                 }
-            }, { passive: true });
+            }, {passive: true});
 
             window.addEventListener('touchend', () => isPointerDragging = false);
         }
@@ -2162,21 +2194,21 @@
                 }
             });
 
-            const stormState = { progress: 0.0 };
+            const stormState = {progress: 0.0};
 
             stormTimeline
                 .to(stormState, {
                     progress: 1.0,
                     duration: 2.2,
                     ease: "power2.out",
-                    onUpdate: () => { windStormProgress = stormState.progress; }
+                    onUpdate: () => {windStormProgress = stormState.progress;}
                 })
                 .to(stormState, {
                     progress: 0.0,
                     duration: 3.5,
                     delay: 2.5, // Wind ka jhonka 2.5 seconds tak tez rahega
                     ease: "sine.inOut",
-                    onUpdate: () => { windStormProgress = stormState.progress; }
+                    onUpdate: () => {windStormProgress = stormState.progress;}
                 });
         }
 
@@ -2196,7 +2228,7 @@
             }
         }
 
-        camera.userData = { lookX: 0, lookY: 1.5, lookZ: 0 };
+        camera.userData = {lookX: 0, lookY: 1.5, lookZ: 0};
 
         const clock = new THREE.Clock();
 
@@ -2218,7 +2250,7 @@
                         const dx = g.pos.x - fPos.x;
                         const dz = g.pos.z - fPos.z;
                         const dist = Math.sqrt(dx * dx + dz * dz);
-                        const bendRadius = 0.95; 
+                        const bendRadius = 0.95;
 
                         if (dist < bendRadius) {
                             const force = (1.0 - dist / bendRadius) * 0.42 * flower.growth;
@@ -2244,7 +2276,7 @@
             for (let i = 0; i < tinyCount; i++) {
                 const tf = tinyFlowerData[i];
                 dummy.position.copy(tf.pos);
-                
+
                 const windMultiplier = 1.0 + windStormProgress * 3.5;
                 dummy.rotation.set(
                     tf.rotX + Math.sin(time * tf.windSpeed + tf.windOffset) * (0.14 * windMultiplier),
@@ -2257,7 +2289,7 @@
             }
             tinyFlowerMesh.instanceMatrix.needsUpdate = true;
 
-            const petalMultiplier = 1.0 + windStormProgress * 4.0; 
+            const petalMultiplier = 1.0 + windStormProgress * 4.0;
             for (let i = 0; i < petalCount; i++) {
                 const p = petals[i];
                 p.pos.y -= p.speedY * petalMultiplier;
@@ -2354,4 +2386,5 @@
         }
     </script>
 </body>
+
 </html>
