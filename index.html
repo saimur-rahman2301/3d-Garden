@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>A Garden For Her — Designed by Cipher Stack</title>
+    <meta name="description"
+        content="A hyper-realistic procedural 3D garden. Walk forward, plant flowers, move freely in 360° camera view, and watch flowers from every angle. Designed by Cipher Stack.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0b0c10;
+            font-family: 'Inter', sans-serif;
+            color: #f3f4f6;
+        }
+
+        #webgl-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            cursor: grab;
+            transition: cursor 0.1s;
+        }
+
+        #webgl-container:active {
+            cursor: grabbing;
+        }
+
+        #webgl-container.plant-mode {
+            cursor: crosshair;
+        }
+
+        #webgl-container.walk-mode {
+            cursor: move;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.72) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .film-grain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* ── Stage Progress ── */
+        .stage-progress {
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 9px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            pointer-events: none;
+        }
+
+        .stage-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stage-dot.completed {
+            background: rgba(255, 255, 255, 0.48);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .stage-dot.active {
+            background: #fef08a;
+            border-color: rgba(254, 240, 138, 0.7);
+            box-shadow: 0 0 10px rgba(254, 240, 138, 0.55);
+            width: 10px;
+            height: 10px;
+        }
+
+        /* ── Camera Mode Bar ── */
+        .cam-bar {
+            position: absolute;
+            top: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 25;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            background: rgba(5, 7, 11, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 30px;
+            padding: 4px 6px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            pointer-events: auto;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .cam-btn {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .cam-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .cam-btn.active {
+            background: rgba(255, 255, 255, 0.16);
+            color: #fef08a;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ── Main UI ── */
+        .ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 20px;
+            pointer-events: none;
+        }
+
+        .narrative-box {
+            text-align: center;
+            max-width: 600px;
+            margin-top: 12vh;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            pointer-events: none;
+        }
+
+        .text-stage-title {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 3.5rem;
+            font-weight: 300;
+            line-height: 1.1;
+            color: #fef08a;
+            text-shadow: 0 0 24px rgba(254, 240, 138, 0.38);
+            opacity: 0;
+            clip-path: inset(0 100% 0 0);
+            transition: opacity 0.5s ease;
+        }
+
+        .text-stage-title.active {
+            opacity: 1;
+            clip-path: inset(0 0 0 0);
+            transition: opacity 1.2s ease, clip-path 3.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .text-stage-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+            color: #d1d5db;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.5s ease 1s, transform 1.5s ease 1s;
+        }
+
+        .controls-box {
+            margin-bottom: 7vh;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .btn-premium {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #ffffff;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-premium:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.23em;
+            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .btn-premium:active {
+            transform: translateY(0);
+        }
+
+        @keyframes softPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 4px 30px rgba(255, 255, 255, 0.08), 0 0 0 4px rgba(255, 255, 255, 0.04);
+            }
+        }
+
+        .btn-premium.pulsing {
+            animation: softPulse 2.8s ease-in-out infinite;
+        }
+
+        /* ── LUXURIOUS INTRO SCREEN (1st Screen) ── */
+        .intro-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 45%, rgba(15, 20, 32, 0.72) 0%, rgba(5, 7, 12, 0.94) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            opacity: 1;
+            transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 30px;
+        }
+
+        .intro-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(254, 240, 138, 0.12) 0%, transparent 70%);
+            border: 1px solid rgba(254, 240, 138, 0.28);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 4px;
+            box-shadow: 0 0 35px rgba(254, 240, 138, 0.2);
+            animation: emblemGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes emblemGlow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 25px rgba(254, 240, 138, 0.18);
+                border-color: rgba(254, 240, 138, 0.25);
+            }
+
+            100% {
+                transform: scale(1.06);
+                box-shadow: 0 0 45px rgba(254, 240, 138, 0.35);
+                border-color: rgba(254, 240, 138, 0.5);
+            }
+        }
+
+        .intro-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.6rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            background: linear-gradient(135deg, #ffffff 0%, #fff7d6 35%, #fef08a 68%, #ffc0cb 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            line-height: 1.15;
+            filter: drop-shadow(0 0 25px rgba(254, 240, 138, 0.35));
+            animation: titleShimmer 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleShimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .intro-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 300;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: #d1d5db;
+            text-align: center;
+            opacity: 0.85;
+        }
+
+        .intro-designer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 400;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: #fef08a;
+            background: rgba(254, 240, 138, 0.08);
+            border: 1px solid rgba(254, 240, 138, 0.25);
+            padding: 5px 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(254, 240, 138, 0.12);
+            margin-bottom: 16px;
+        }
+
+        .btn-intro-start {
+            background: linear-gradient(135deg, rgba(254, 240, 138, 0.12) 0%, rgba(255, 175, 189, 0.08) 100%);
+            border: 1px solid rgba(254, 240, 138, 0.42);
+            padding: 16px 42px;
+            border-radius: 35px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #ffffff;
+            cursor: pointer;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 35px rgba(254, 240, 138, 0.2), 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-intro-start:hover {
+            background: linear-gradient(135deg, rgba(254, 240, 138, 0.22) 0%, rgba(255, 175, 189, 0.16) 100%);
+            border-color: rgba(254, 240, 138, 0.7);
+            letter-spacing: 0.26em;
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(254, 240, 138, 0.38), 0 15px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn-intro-start:active {
+            transform: translateY(0);
+        }
+
+        /* ── Branding Footer ── */
+        .branding {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #ffafbd, #ffc3a0, #ffafbd, #ffebd3);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGradientShine 6s linear infinite;
+            opacity: 0.9;
+            pointer-events: none;
+            z-index: 50;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        @keyframes textGradientShine {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* ── Walk Mode HUD Controls ── */
+        .walk-hud {
+            position: absolute;
+            top: 95px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            background: rgba(5, 7, 11, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 30px;
+            padding: 9px 22px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: none;
+            align-items: center;
+            gap: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.76rem;
+            color: #e5e7eb;
+            letter-spacing: 0.08em;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .walk-hud.active {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .walk-hud-badge {
+            background: rgba(134, 239, 172, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(134, 239, 172, 0.3);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .btn-exit-walk {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 5px 13px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            transition: all 0.2s ease;
+        }
+
+        .btn-exit-walk:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* On-screen D-Pad for Walk Mode */
+        .dpad-container {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 35;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            pointer-events: auto;
+        }
+
+        .dpad-container.active {
+            display: flex;
+        }
+
+        .dpad-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dpad-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            touch-action: manipulation;
+            transition: background 0.15s;
+        }
+
+        .dpad-btn:active {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Camera Hint Toast */
+        .cam-hint-toast {
+            position: absolute;
+            bottom: 130px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 22;
+            background: rgba(5, 7, 11, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 7px 18px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.65);
+            letter-spacing: 0.06em;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .cam-hint-toast.visible {
+            opacity: 1;
+        }
+
+        /* ── Love Letter Modal ── */
+        .letter-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(7, 8, 10, 0.72);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s ease;
+        }
+
+        .letter-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .letter-paper {
+            background: #fcf9f2;
+            color: #1a1a1a;
+            width: 90%;
+            max-width: 500px;
+            padding: 45px 35px;
+            border-radius: 12px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            font-family: 'Cormorant Garamond', serif;
+            transform: translateY(50px);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .letter-modal.active .letter-paper {
+            transform: translateY(0);
+        }
+
+        .letter-title {
+            font-size: 2rem;
+            font-weight: 300;
+            font-style: italic;
+            color: #b45309;
+            margin-bottom: 25px;
+        }
+
+        .letter-text {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            font-style: italic;
+            color: #2c2c2c;
+            margin-bottom: 35px;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .btn-close-letter {
+            background: #111318;
+            color: #fcf9f2;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-close-letter:hover {
+            background: #3a3f4d;
+            transform: translateY(-1px);
+        }
+
+        /* ── Plant Mode Panel ── */
+        .plant-panel {
+            position: absolute;
+            bottom: 90px;
+            right: 26px;
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        .flower-selector-panel {
+            background: rgba(5, 7, 11, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 20px 18px;
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            min-width: 220px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .flower-selector-panel.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .selector-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 300;
+            font-style: italic;
+            color: #d1d5db;
+            text-align: center;
+            margin-bottom: 14px;
+            letter-spacing: 0.04em;
+        }
+
+        .flower-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .flower-opt-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+            padding: 9px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.07em;
+            transition: all 0.22s ease;
+            text-align: center;
+        }
+
+        .flower-opt-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .flower-opt-btn.selected {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.38);
+            color: #ffffff;
+        }
+
+        .plant-hint-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.32);
+            text-align: center;
+            font-style: italic;
+            letter-spacing: 0.04em;
+        }
+
+        .plant-counter {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.82rem;
+            color: #86efac;
+            text-align: center;
+            margin-top: 9px;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .btn-plant-toggle {
+            background: rgba(5, 7, 11, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #d1d5db;
+            padding: 12px 22px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 300;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-plant-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-plant-toggle.active {
+            background: rgba(60, 180, 80, 0.18);
+            border-color: rgba(100, 240, 120, 0.5);
+            color: #86efac;
+            box-shadow: 0 0 22px rgba(100, 240, 120, 0.12);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .text-stage-title {
+                font-size: 1.7rem;
+            }
+
+            .text-stage-sub {
+                font-size: 0.85rem;
+            }
+
+            .intro-title {
+                font-size: 2.3rem;
+            }
+
+            .btn-premium {
+                padding: 12px 24px;
+                font-size: 0.75rem;
+            }
+
+            .btn-intro-start {
+                padding: 14px 34px;
+                font-size: 0.78rem;
+            }
+
+            .plant-panel {
+                bottom: 80px;
+                right: 14px;
+            }
+
+            .dpad-container {
+                bottom: 20px;
+                left: 16px;
+            }
+
+            .cam-bar {
+                width: 92%;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="webgl-container"></div>
+    <div class="vignette"></div>
+    <div class="film-grain"></div>
+
+    <div class="branding">Designed by Cipher Stack</div>
+
+    <!-- Stage Progress Dots -->
+    <div class="stage-progress" id="stage-progress"></div>
+
+    <!-- Camera Mode Bar -->
+    <div class="cam-bar" id="cam-bar">
+        <button class="cam-btn active" id="cambtn-story" onclick="setCameraMode('story')">🎬 Story View</button>
+        <button class="cam-btn" id="cambtn-free" onclick="setCameraMode('free')">🎥 360° Free Fly</button>
+        <button class="cam-btn" id="cambtn-flower" onclick="setCameraMode('flower')">🔍 Focus Flower</button>
+        <button class="cam-btn" id="cambtn-top" onclick="setCameraMode('top')">🚁 Aerial Top</button>
+        <button class="cam-btn" id="cambtn-walk" onclick="setCameraMode('walk')">🚶 Walk View</button>
+    </div>
+
+    <!-- Camera Hint Toast -->
+    <div class="cam-hint-toast" id="cam-hint-toast">
+        Drag to Orbit 360° • Right-Click / 2-Finger Drag to Pan • Scroll / Pinch to Zoom
+    </div>
+
+    <!-- Walk Mode HUD overlay -->
+    <div class="walk-hud" id="walk-hud">
+        <span class="walk-hud-badge">🚶 WALK MODE</span>
+        <span>WASD / Arrow Keys or Drag to Walk & Look</span>
+        <button class="btn-exit-walk" onclick="setCameraMode('free')">Exit Walk</button>
+    </div>
+
+    <!-- On-screen D-Pad for Walk Mode -->
+    <div class="dpad-container" id="dpad-container">
+        <div class="dpad-btn" id="dpad-up">▲</div>
+        <div class="dpad-row">
+            <div class="dpad-btn" id="dpad-left">◀</div>
+            <div class="dpad-btn" id="dpad-down">▼</div>
+            <div class="dpad-btn" id="dpad-right">▶</div>
+        </div>
+    </div>
+
+    <!-- LUXURIOUS INTRO SCREEN (1st Screen) -->
+    <div class="intro-overlay" id="intro-screen">
+        <div class="intro-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="1.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21a9 9 0 0 0 9-9c0-4.97-4.03-9-9-9s-9 4.03-9 9a9 9 0 0 0 9 9Z" />
+                <path d="M12 7a5 5 0 0 1 5 5c0 2.76-2.24 5-5 5s-5-2.24-5-5a5 5 0 0 1 5-5Z" />
+                <path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+            </svg>
+        </div>
+        <h1 class="intro-title">A Garden For Her</h1>
+        <p class="intro-subtitle">A Procedural Cinematic Odyssey</p>
+        <div class="intro-designer">Designed by Cipher Stack</div>
+        <button class="btn-intro-start" onclick="beginJourney()">
+            Step Into The Garden
+        </button>
+    </div>
+
+    <!-- Main UI -->
+    <div class="ui-container">
+        <div class="narrative-box">
+            <h2 class="text-stage-title" id="stage-title">Some feelings are difficult to put into words.</h2>
+            <p class="text-stage-sub" id="stage-sub">Some things begin quietly.</p>
+        </div>
+
+        <div class="controls-box" style="display:flex;gap:12px;">
+            <button class="btn-premium" id="btn-breeze" style="display:none;opacity:0;" onclick="triggerPetalStorm()">
+                Summon Breeze
+            </button>
+            <button class="btn-premium" id="btn-next" onclick="nextStage()">
+                Walk Forward
+            </button>
+        </div>
+    </div>
+
+    <!-- Plant Mode Panel -->
+    <div class="plant-panel" id="plant-panel">
+        <div class="flower-selector-panel" id="flower-selector-panel">
+            <p class="selector-title">Choose a Flower</p>
+            <div class="flower-options-grid">
+                <button class="flower-opt-btn selected" data-type="rose" onclick="selectFlowerType(this,'rose')">🌹
+                    Rose</button>
+                <button class="flower-opt-btn" data-type="tulip" onclick="selectFlowerType(this,'tulip')">🌷
+                    Tulip</button>
+                <button class="flower-opt-btn" data-type="lily" onclick="selectFlowerType(this,'lily')">🌸 Lily</button>
+                <button class="flower-opt-btn" data-type="cherry" onclick="selectFlowerType(this,'cherry')">🌺
+                    Cherry</button>
+                <button class="flower-opt-btn" data-type="lavender" onclick="selectFlowerType(this,'lavender')">🌻
+                    Sunflower</button>
+                <button class="flower-opt-btn" data-type="wild" onclick="selectFlowerType(this,'wild')">💐 Wild</button>
+            </div>
+            <p class="plant-hint-text">Click anywhere on the garden to plant</p>
+            <p class="plant-counter" id="plant-counter">0 flowers planted</p>
+        </div>
+        <button class="btn-plant-toggle" id="btn-plant-toggle" onclick="togglePlantMode()">
+            🌱 Plant a Flower
+        </button>
+    </div>
+
+    <!-- Love Letter Modal -->
+    <div class="letter-modal" id="letter-modal">
+        <div class="letter-paper">
+            <h3 class="letter-title">Dearest,</h3>
+            <p class="letter-text" id="letter-text">
+                Every flower in this garden was planted with a thought of you.
+                Some feelings are indeed too deep for simple words, so I built this living space instead.
+
+                Thank you for simply existing, for making my world brighter, and for being the most beautiful part of my
+                story.
+
+                This garden will always exist, just for you.
+
+                With love, always.
+            </p>
+            <button class="btn-close-letter" onclick="closeLoveLetter()">Close Scroll</button>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        //  AUDIO ENGINE
+        // =====================================================================
+        class AudioEngine {
+            constructor() {this.ctx = null; this.isInitialized = false;}
+            init() {
+                if (this.isInitialized) return;
+                try {
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AC();
+                    const bufferSize = 2 * this.ctx.sampleRate;
+                    const buf = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const out = buf.getChannelData(0);
+                    let last = 0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const w = Math.random() * 2 - 1;
+                        out[i] = (last + 0.02 * w) / 1.02;
+                        last = out[i];
+                    }
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buf; noise.loop = true;
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(300, this.ctx.currentTime);
+                    filter.Q.setValueAtTime(2, this.ctx.currentTime);
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                    noise.start(0);
+                    setInterval(() => {
+                        if (!this.ctx) return;
+                        const t = this.ctx.currentTime;
+                        filter.frequency.exponentialRampToValueAtTime(150 + Math.random() * 350, t + 2 + Math.random() * 3);
+                    }, 4000);
+                    setInterval(() => {if (Math.random() > 0.4) this.playChime();}, 5000);
+                    this.isInitialized = true;
+                } catch (e) {console.warn('Web Audio blocked.');}
+            }
+            playChime() {
+                if (!this.ctx) return;
+                const freqs = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+                const freq = freqs[Math.floor(Math.random() * freqs.length)];
+                const t = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t);
+                g.gain.setValueAtTime(0, t);
+                g.gain.linearRampToValueAtTime(0.03, t + 0.05);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + 4.0);
+                osc.connect(g); g.connect(this.ctx.destination);
+                osc.start(t); osc.stop(t + 4.1);
+            }
+        }
+        const audio = new AudioEngine();
+
+        // =====================================================================
+        //  REAL-WORLD PROCEDURAL TEXTURE GENERATORS
+        // =====================================================================
+        function createLeafTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 512, 0, 0);
+            grad.addColorStop(0, '#12260f'); grad.addColorStop(0.5, '#1e4418'); grad.addColorStop(1, '#2c5b23');
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, 256, 512);
+            ctx.strokeStyle = '#3e7534'; ctx.lineWidth = 3.5;
+            ctx.shadowColor = '#0b1808'; ctx.shadowBlur = 4;
+            ctx.beginPath(); ctx.moveTo(128, 512); ctx.lineTo(128, 0); ctx.stroke();
+            ctx.shadowBlur = 0; ctx.lineWidth = 1.5;
+            for (let y = 80; y < 512; y += 35) {
+                ctx.beginPath(); ctx.moveTo(128, y); ctx.quadraticCurveTo(80, y - 25, 15, y - 55); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(128, y); ctx.quadraticCurveTo(176, y - 25, 241, y - 55); ctx.stroke();
+            }
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.ClampToEdgeWrapping; tex.wrapT = THREE.ClampToEdgeWrapping;
+            return tex;
+        }
+
+        function createPetalTexture(baseColor, tipColor, veinColor) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createRadialGradient(256, 470, 10, 256, 200, 300);
+            grad.addColorStop(0.00, baseColor);
+            grad.addColorStop(0.25, tipColor);
+            grad.addColorStop(0.60, tipColor);
+            grad.addColorStop(0.85, baseColor);
+            grad.addColorStop(1.00, baseColor);
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, 512, 512);
+
+            const highlight = ctx.createRadialGradient(280, 90, 4, 280, 90, 140);
+            highlight.addColorStop(0, 'rgba(255,255,255,0.25)');
+            highlight.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = highlight; ctx.fillRect(0, 0, 512, 512);
+
+            if (veinColor) {
+                ctx.globalAlpha = 0.22;
+                const veinCount = 18;
+                for (let i = 0; i <= veinCount; i++) {
+                    const xEnd = 15 + (i / veinCount) * 482;
+                    ctx.strokeStyle = veinColor;
+                    ctx.lineWidth = Math.max(0.5, 1.5 - Math.abs(i - veinCount / 2) / veinCount * 1.1);
+                    ctx.beginPath();
+                    ctx.moveTo(256, 510);
+                    ctx.quadraticCurveTo(xEnd * 0.55 + 25, 280, xEnd, 12);
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1.0;
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.ClampToEdgeWrapping; tex.wrapT = THREE.ClampToEdgeWrapping;
+            return tex;
+        }
+
+        function createGroundTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#10140e'; ctx.fillRect(0, 0, 512, 512);
+            ctx.fillStyle = '#1d2618';
+            for (let i = 0; i < 20000; i++) {
+                const x = Math.random() * 512, y = Math.random() * 512, r = 1 + Math.random() * 3;
+                ctx.fillRect(x, y, r, r);
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createMistTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(64, 64, 8, 64, 64, 56);
+            grad.addColorStop(0, 'rgba(230,245,240,0.16)');
+            grad.addColorStop(0.4, 'rgba(210,230,225,0.09)');
+            grad.addColorStop(0.8, 'rgba(180,210,205,0.03)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, 128, 128);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createRippleTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(64, 64, 25, 64, 64, 60);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(0.3, 'rgba(255,255,255,0.05)');
+            grad.addColorStop(0.5, 'rgba(255,255,255,0.85)');
+            grad.addColorStop(0.7, 'rgba(255,255,255,0.18)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, 128, 128);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const LEAF_TEXTURE = createLeafTexture();
+        const GROUND_TEXTURE = createGroundTexture();
+        GROUND_TEXTURE.wrapS = THREE.RepeatWrapping;
+        GROUND_TEXTURE.wrapT = THREE.RepeatWrapping;
+        GROUND_TEXTURE.repeat.set(10, 10);
+
+        // =====================================================================
+        //  STAGE DATA + FLOWER CONFIGS
+        // =====================================================================
+        const STAGES = [
+            {
+                title: "Some feelings are difficult to put into words.",
+                sub: "Some things begin quietly.",
+                camPos: {x: 0, y: 1.5, z: 5.0}, camLook: {x: 0, y: 0.7, z: 1.5},
+                lightColor: 0xff4d5a, fogColor: 0x1a060c, skyHorizon: '#5e1322',
+                sunIntensity: 1.8, flowerType: 'rose',
+                flowerPos: {x: 0, y: -0.8, z: 1.5},
+                fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'
+            },
+            {
+                title: "So sometimes they are planted instead.",
+                sub: "Without asking for attention.",
+                camPos: {x: -2.8, y: 1.3, z: 4.0}, camLook: {x: -2.0, y: 0.8, z: 1.0},
+                lightColor: 0xffaa00, fogColor: 0x1c1206, skyHorizon: '#5c2a04',
+                sunIntensity: 2.0, flowerType: 'tulip',
+                flowerPos: {x: -2.0, y: -0.8, z: 1.0},
+                fColor: '#ffffe6', fGlow: '#ffaa00', pColor: '#ff0055'
+            },
+            {
+                title: "Every flower here carries a thought that was never spoken.",
+                sub: "But still manages to change everything.",
+                camPos: {x: 2.8, y: 1.6, z: 4.2}, camLook: {x: 2.0, y: 0.9, z: 1.5},
+                lightColor: 0x00ffff, fogColor: 0x061c22, skyHorizon: '#08444a',
+                sunIntensity: 2.2, flowerType: 'lily',
+                flowerPos: {x: 2.0, y: -0.8, z: 1.5},
+                fColor: '#eaffff', fGlow: '#00ffff', pColor: '#ccff00'
+            },
+            {
+                title: "Some people leave footprints in places they never visit again.",
+                sub: "One moment at a time.",
+                camPos: {x: -1.2, y: 1.4, z: 3.0}, camLook: {x: -0.5, y: 0.8, z: -1.0},
+                lightColor: 0xff3b6b, fogColor: 0x1d0614, skyHorizon: '#4d0635',
+                sunIntensity: 2.0, flowerType: 'cherry',
+                flowerPos: {x: -0.5, y: -0.8, z: -1.0},
+                fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'
+            },
+            {
+                title: "And some gardens are created simply because someone existed.",
+                sub: "And before you realise it...",
+                camPos: {x: 1.8, y: 1.4, z: 2.8}, camLook: {x: 0.6, y: 0.8, z: -1.5},
+                lightColor: 0xffa200, fogColor: 0x1d1003, skyHorizon: '#5e2908',
+                sunIntensity: 2.4, flowerType: 'lavender',
+                flowerPos: {x: 0.6, y: -0.8, z: -1.5},
+                fColor: '#ffffe6', fGlow: '#ffcc00', pColor: '#ff5500'
+            },
+            {
+                title: "Thank you for being part of the story.",
+                sub: "The garden exists.",
+                camPos: {x: 0, y: 2.4, z: 6.8}, camLook: {x: 0, y: 0.8, z: -0.5},
+                lightColor: 0x00ffff, fogColor: 0x03121d, skyHorizon: '#0c3254',
+                sunIntensity: 2.2, flowerType: 'wild',
+                flowerPos: {x: 0, y: -0.8, z: -1.0},
+                fColor: '#eaffff', fGlow: '#00ffff', pColor: '#ccff00'
+            }
+        ];
+
+        const FLOWER_CONFIGS = {
+            rose: {fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffe000'},
+            tulip: {fColor: '#fffae6', fGlow: '#ffaa00', pColor: '#ff2244'},
+            lily: {fColor: '#eaffff', fGlow: '#00ddff', pColor: '#ccff00'},
+            cherry: {fColor: '#ffe8f0', fGlow: '#ff4488', pColor: '#ffff99'},
+            lavender: {fColor: '#fffae6', fGlow: '#ffcc00', pColor: '#ff5500'},
+            wild: {fColor: '#eaffff', fGlow: '#00ffcc', pColor: '#ddff00'}
+        };
+
+        let currentStageIndex = 0;
+        let isTransitioning = false;
+
+        // =====================================================================
+        //  THREE.JS SCENE SETUP
+        // =====================================================================
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(STAGES[0].fogColor, 0.045);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 1.5, 9);
+
+        const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false, powerPreference: 'high-performance'});
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        container.appendChild(renderer.domElement);
+
+        const dummy = new THREE.Object3D();
+
+        const renderScene = new THREE.RenderPass(scene, camera);
+        const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight), 0.42, 0.32, 0.78
+        );
+        const composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderScene); composer.addPass(bloomPass);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffedd5, 0.4);
+        scene.add(ambientLight);
+        const hemiLight = new THREE.HemisphereLight(0xffeedd, 0x223311, 0.6);
+        scene.add(hemiLight);
+        const sunLight = new THREE.DirectionalLight(0xffecc4, 2.5);
+        sunLight.position.set(8, 12, 6);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048; sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.left = -6; sunLight.shadow.camera.right = 6;
+        sunLight.shadow.camera.top = 6; sunLight.shadow.camera.bottom = -6;
+        sunLight.shadow.camera.near = 0.5; sunLight.shadow.camera.far = 30;
+        sunLight.shadow.bias = -0.001; sunLight.shadow.normalBias = 0.03;
+        scene.add(sunLight);
+
+        // Volumetric Sun Beam
+        const beamGeo = new THREE.CylinderGeometry(0.2, 3.5, 18, 32, 1, true);
+        beamGeo.translate(0, -9, 0); beamGeo.rotateX(Math.PI / 5); beamGeo.rotateZ(-Math.PI / 10);
+        const beamMat = new THREE.MeshBasicMaterial({color: 0x00e5ff, transparent: true, opacity: 0.04, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false});
+        const sunBeam = new THREE.Mesh(beamGeo, beamMat);
+        sunBeam.position.set(-6, 15, -6); scene.add(sunBeam);
+
+        // Sky Dome
+        const skyCanvas = document.createElement('canvas');
+        skyCanvas.width = 128; skyCanvas.height = 128;
+        const skyCtx = skyCanvas.getContext('2d');
+        const skyTexture = new THREE.CanvasTexture(skyCanvas);
+        const skyDome = new THREE.Mesh(
+            new THREE.SphereGeometry(45, 32, 15),
+            new THREE.MeshBasicMaterial({map: skyTexture, side: THREE.BackSide, fog: false})
+        );
+        scene.add(skyDome);
+
+        const skyColors = {
+            zenith: new THREE.Color('#0a0e19'),
+            horizon: new THREE.Color('#15111b')
+        };
+        function redrawSkyDome() {
+            const g = skyCtx.createLinearGradient(0, 0, 0, 128);
+            g.addColorStop(0, '#' + skyColors.zenith.getHexString());
+            g.addColorStop(0.65, '#121726');
+            g.addColorStop(1.0, '#' + skyColors.horizon.getHexString());
+            skyCtx.fillStyle = g; skyCtx.fillRect(0, 0, 128, 128);
+            skyTexture.needsUpdate = true;
+        }
+        redrawSkyDome();
+
+        // Stars
+        const starCount = 180;
+        const starPositions = [];
+        const R = 43.0;
+        for (let i = 0; i < starCount; i++) {
+            const theta = Math.random() * Math.PI;
+            const phi = Math.acos((Math.random() - 0.5) * 2);
+            starPositions.push(
+                R * Math.sin(theta) * Math.sin(phi),
+                Math.abs(R * Math.cos(phi)) * 0.85 + 2.0,
+                -Math.abs(R * Math.sin(theta) * Math.cos(phi))
+            );
+        }
+        const heartPoints = [];
+        const hScale = 0.22, hCX = 0, hCY = 11.5;
+        for (let i = 0; i <= 16; i++) {
+            const t = (i / 16) * Math.PI * 2;
+            const hx = 16 * Math.pow(Math.sin(t), 3) * hScale;
+            const hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * hScale;
+            const px = hCX + hx, py = hCY + hy;
+            const pz = -Math.sqrt(R * R - px * px - py * py);
+            heartPoints.push(new THREE.Vector3(px, py, pz));
+            starPositions.push(px, py, pz);
+        }
+        const starGeo = new THREE.BufferGeometry();
+        starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({color: 0xffffff, size: 0.05, transparent: true, opacity: 0.6, depthWrite: false, fog: false});
+        scene.add(new THREE.Points(starGeo, starMat));
+        const constellationLine = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(heartPoints),
+            new THREE.LineBasicMaterial({color: 0xff0055, transparent: true, opacity: 0.35, depthWrite: false, fog: false})
+        );
+        scene.add(constellationLine);
+
+        // Shooting Star
+        const shootingStarGeo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, 0), new THREE.Vector3(-0.6, 0.45, 0.3)
+        ]);
+        const shootingStarMat = new THREE.LineBasicMaterial({color: 0xe0f7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false});
+        const shootingStar = new THREE.Line(shootingStarGeo, shootingStarMat);
+        scene.add(shootingStar);
+
+        function triggerShootingStar() {
+            const sx = (Math.random() - 0.5) * 16, sy = 7 + Math.random() * 3.5, sz = -12 - Math.random() * 6;
+            shootingStar.position.set(sx, sy, sz);
+            shootingStar.material.opacity = 0;
+            gsap.timeline()
+                .to(shootingStar.position, {x: sx + 3.5 + Math.random() * 3, y: sy - 2.5 - Math.random() * 2.5, z: sz + 2.5 + Math.random() * 2.5, duration: 1.1, ease: 'sine.inOut'}, 0)
+                .to(shootingStar.material, {opacity: 0.8, duration: 0.25, ease: 'power1.out'}, 0)
+                .to(shootingStar.material, {opacity: 0, duration: 0.85, ease: 'power2.in'}, 0.25);
+        }
+        setInterval(() => {if (!isTransitioning) triggerShootingStar();}, 14000);
+
+        // Terrain
+        const terrainGeo = new THREE.PlaneGeometry(30, 30, 64, 64);
+        terrainGeo.rotateX(-Math.PI / 2);
+        const posAttr = terrainGeo.attributes.position;
+        for (let i = 0; i < posAttr.count; i++) {
+            const x = posAttr.getX(i), z = posAttr.getZ(i);
+            posAttr.setY(i, Math.sin(x * 0.2) * Math.cos(z * 0.2) * 0.25 + Math.sin(x * 0.05) * 0.15 - 0.8);
+        }
+        terrainGeo.computeVertexNormals();
+        const terrain = new THREE.Mesh(
+            terrainGeo,
+            new THREE.MeshStandardMaterial({color: 0x05070a, roughness: 0.92, metalness: 0.05})
+        );
+        terrain.receiveShadow = true; scene.add(terrain);
+
+        function getTerrainHeight(x, z) {
+            return Math.sin(x * 0.2) * Math.cos(z * 0.2) * 0.25 + Math.sin(x * 0.05) * 0.15 - 0.8;
+        }
+
+        // Geometry helpers
+        function mergeGeometries(geos) {
+            let tv = 0;
+            geos.forEach(g => {tv += g.attributes.position.count;});
+            const positions = new Float32Array(tv * 3), normals = new Float32Array(tv * 3), uvs = new Float32Array(tv * 2);
+            let off = 0;
+            geos.forEach(g => {
+                positions.set(g.attributes.position.array, off * 3);
+                normals.set(g.attributes.normal.array, off * 3);
+                uvs.set(g.attributes.uv.array, off * 2);
+                off += g.attributes.position.count;
+            });
+            const m = new THREE.BufferGeometry();
+            m.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            m.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+            m.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+            return m;
+        }
+
+        function createGrassClusterGeometry() {
+            const geo = new THREE.PlaneGeometry(0.009, 0.55, 1, 8);
+            geo.translate(0, 0.275, 0);
+            const pos = geo.attributes.position;
+            const bend = 0.12 + Math.random() * 0.15, tilt = (Math.random() - 0.5) * 0.15;
+            for (let j = 0; j < pos.count; j++) {
+                const x = pos.getX(j), y = pos.getY(j), ny = y / 0.55;
+                pos.setX(j, x * (1 - ny));
+                pos.setZ(j, -Math.pow(ny, 2) * bend);
+                pos.setX(j, pos.getX(j) + Math.pow(ny, 2) * tilt);
+            }
+            geo.computeVertexNormals(); return geo;
+        }
+
+        function createTinyFlowerGeometry() {
+            const s1 = new THREE.PlaneGeometry(0.008, 0.28); s1.translate(0, 0.14, 0);
+            const s2 = s1.clone().rotateY(Math.PI / 2);
+            const p1 = new THREE.PlaneGeometry(0.05, 0.05); p1.rotateX(Math.PI / 2); p1.translate(0, 0.28, 0);
+            const p2 = p1.clone().rotateY(Math.PI / 4);
+            return mergeGeometries([s1, s2, p1, p2]);
+        }
+
+        // Grass instancing
+        const grassCount = 1000;
+        const grassGeo = createGrassClusterGeometry();
+        const grassMat = new THREE.MeshPhysicalMaterial({color: 0x012415, roughness: 0.35, side: THREE.DoubleSide, transmission: 0.25, clearcoat: 0.2, clearcoatRoughness: 0.1});
+        const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, grassCount);
+        grassMesh.castShadow = true; grassMesh.receiveShadow = true;
+
+        const tinyCount = 350;
+        const tinyGeo = createTinyFlowerGeometry();
+        const tinyMat = new THREE.MeshPhysicalMaterial({color: 0xffffff, roughness: 0.4, side: THREE.DoubleSide, transmission: 0.35, clearcoat: 0.15});
+        const tinyFlowerMesh = new THREE.InstancedMesh(tinyGeo, tinyMat, tinyCount);
+        tinyFlowerMesh.castShadow = true;
+        const tinyColors = [new THREE.Color('#ff5588'), new THREE.Color('#ffaa00'), new THREE.Color('#00e5ff'), new THREE.Color('#ffffff')];
+        const tinyFlowerData = [];
+        for (let i = 0; i < tinyCount; i++) {
+            const px = (Math.random() - 0.5) * 18, pz = (Math.random() - 0.5) * 18;
+            const py = getTerrainHeight(px, pz);
+            dummy.position.set(px, py, pz); dummy.rotation.set(0, Math.random() * Math.PI, 0); dummy.scale.set(1, 1, 1);
+            dummy.updateMatrix(); tinyFlowerMesh.setMatrixAt(i, dummy.matrix);
+            tinyFlowerMesh.setColorAt(i, tinyColors[Math.floor(Math.random() * tinyColors.length)]);
+            tinyFlowerData.push({index: i, pos: new THREE.Vector3(px, py, pz), rotX: 0, rotZ: 0, windOffset: Math.random() * Math.PI * 2, windSpeed: 1.2 + Math.random() * 0.8});
+        }
+        scene.add(tinyFlowerMesh);
+
+        const foliageCount = 180;
+        const foliageGeo = new THREE.PlaneGeometry(0.12, 0.3, 8, 8);
+        const fP = foliageGeo.attributes.position;
+        for (let i = 0; i < fP.count; i++) {
+            const x = fP.getX(i), y = fP.getY(i), ny = (y + 0.15) / 0.3;
+            fP.setX(i, x * Math.sin(ny * Math.PI));
+            fP.setZ(i, -Math.pow(ny - 0.5, 2) * 0.1 - Math.pow(x, 2) * 1.5);
+        }
+        foliageGeo.computeVertexNormals();
+        const foliageMesh = new THREE.InstancedMesh(foliageGeo, new THREE.MeshStandardMaterial({color: 0x152c17, roughness: 0.5, side: THREE.DoubleSide}), foliageCount);
+        foliageMesh.castShadow = true;
+        const grassData = [];
+        for (let i = 0; i < grassCount; i++) {
+            const px = (Math.random() - 0.5) * 18, pz = (Math.random() - 0.5) * 18;
+            const py = getTerrainHeight(px, pz);
+            dummy.position.set(px, py, pz); dummy.rotation.set(0, Math.random() * Math.PI, 0); dummy.scale.set(1, 1, 1);
+            dummy.updateMatrix(); grassMesh.setMatrixAt(i, dummy.matrix);
+            grassData.push({index: i, pos: new THREE.Vector3(px, py, pz), rotX: dummy.rotation.x, rotZ: dummy.rotation.z, windOffset: Math.random() * Math.PI * 2, windSpeed: 1.1 + Math.random() * 0.8});
+        }
+        scene.add(grassMesh);
+        for (let i = 0; i < foliageCount; i++) {
+            const px = (Math.random() - 0.5) * 18, pz = (Math.random() - 0.5) * 18;
+            const py = getTerrainHeight(px, pz) - 0.02;
+            dummy.position.set(px, py, pz); dummy.rotation.set(0.2, Math.random() * Math.PI * 2, 0.1);
+            const s = 0.4 + Math.random() * 0.8; dummy.scale.set(s, s, s);
+            dummy.updateMatrix(); foliageMesh.setMatrixAt(i, dummy.matrix);
+        }
+        scene.add(foliageMesh);
+
+        // Fireflies
+        const fireflyCount = 25, firefliesGroup = new THREE.Group();
+        scene.add(firefliesGroup);
+        const fireflyGeo = new THREE.SphereGeometry(0.02, 8, 8);
+        const fireflyMat = new THREE.MeshBasicMaterial({color: 0xd4ff3b, transparent: true, blending: THREE.AdditiveBlending});
+        const fireflies = [];
+        for (let i = 0; i < fireflyCount; i++) {
+            const mesh = new THREE.Mesh(fireflyGeo, fireflyMat.clone());
+            const x = (Math.random() - 0.5) * 8, y = 0.2 + Math.random() * 2.2, z = (Math.random() - 0.5) * 8;
+            mesh.position.set(x, y, z); firefliesGroup.add(mesh);
+            fireflies.push({mesh, basePos: new THREE.Vector3(x, y, z), seedX: Math.random() * 100, seedY: Math.random() * 100, seedZ: Math.random() * 100, speed: 0.35 + Math.random() * 0.45, pulseSpeed: 1.5 + Math.random() * 2, pulseOffset: Math.random() * Math.PI * 2});
+        }
+
+        // Mist
+        const mistCount = 10, mistGroup = new THREE.Group();
+        scene.add(mistGroup);
+        const mistTex = createMistTexture();
+        const mistMat = new THREE.MeshBasicMaterial({map: mistTex, transparent: true, blending: THREE.NormalBlending, depthWrite: false, side: THREE.DoubleSide});
+        const mists = [];
+        for (let i = 0; i < mistCount; i++) {
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), mistMat);
+            mesh.rotation.x = -Math.PI / 2; mesh.rotation.z = Math.random() * Math.PI * 2;
+            const x = (Math.random() - 0.5) * 12, y = -0.72 + Math.random() * 0.28, z = (Math.random() - 0.5) * 12;
+            mesh.position.set(x, y, z);
+            const sc = 0.8 + Math.random() * 0.7; mesh.scale.set(sc, sc, 1);
+            mistGroup.add(mesh);
+            mists.push({mesh, basePos: new THREE.Vector3(x, y, z), speed: 0.12 + Math.random() * 0.18, seedX: Math.random() * 50, seedZ: Math.random() * 50, baseRot: mesh.rotation.z});
+        }
+
+        // Ripple
+        const rippleMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(1, 1),
+            new THREE.MeshBasicMaterial({map: createRippleTexture(), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide})
+        );
+        rippleMesh.rotation.x = -Math.PI / 2; rippleMesh.position.set(0, -0.75, 0);
+        scene.add(rippleMesh);
+        let isRippleAnimating = false;
+        function triggerFlowerRipple() {
+            if (isRippleAnimating || isTransitioning || isWalkMode) return;
+            isRippleAnimating = true;
+            const stage = STAGES[currentStageIndex];
+            rippleMesh.position.set(stage.flowerPos.x, -0.75, stage.flowerPos.z);
+            rippleMesh.material.color.set(stage.fGlow);
+            rippleMesh.scale.set(0.1, 0.1, 1); rippleMesh.material.opacity = 0.85;
+            gsap.timeline({onComplete: () => {isRippleAnimating = false; rippleMesh.material.opacity = 0;}})
+                .to(rippleMesh.scale, {x: 10, y: 10, duration: 1.8, ease: 'power1.out'}, 0)
+                .to(rippleMesh.material, {opacity: 0, duration: 1.8, ease: 'power2.out'}, 0);
+        }
+        container.addEventListener('pointerdown', () => triggerFlowerRipple());
+
+        // Heart Petals (falling)
+        function createHeartGeometry() {
+            const shape = new THREE.Shape();
+            shape.moveTo(5, 5); shape.bezierCurveTo(5, 5, 4, 9, 0, 9);
+            shape.bezierCurveTo(-6, 9, -6, 2, -6, 2); shape.bezierCurveTo(-6, -2, -2, -7, 5, -11);
+            shape.bezierCurveTo(12, -7, 16, -2, 16, 2); shape.bezierCurveTo(16, 2, 16, 9, 10, 9);
+            shape.bezierCurveTo(7, 9, 5, 5, 5, 5);
+            const geo = new THREE.ShapeGeometry(shape);
+            geo.center(); geo.scale(0.0035, 0.0035, 1);
+            return geo;
+        }
+        const petalCount = 80;
+        const petalGeo = createHeartGeometry();
+        const petalMat = new THREE.MeshStandardMaterial({color: 0xff7ea2, emissive: new THREE.Color(0xff4a75), emissiveIntensity: 0.25, side: THREE.DoubleSide, roughness: 0.5});
+        const petalMesh = new THREE.InstancedMesh(petalGeo, petalMat, petalCount);
+        const petalDummy = new THREE.Object3D();
+        const petals = [];
+        for (let i = 0; i < petalCount; i++) {
+            petals.push({pos: new THREE.Vector3((Math.random() - 0.5) * 10, 1 + Math.random() * 5, (Math.random() - 0.5) * 10), speedY: 0.005 + Math.random() * 0.01, speedX: 0.002 + Math.random() * 0.006, rotX: Math.random() * Math.PI, rotY: Math.random() * Math.PI, rotZ: Math.random() * Math.PI, rotSpeed: 0.01 + Math.random() * 0.02});
+        }
+        scene.add(petalMesh);
+
+        // =====================================================================
+        //  HYPER-REALISTIC PROCEDURAL FLOWER CLASS
+        // =====================================================================
+        class ProceduralFlower {
+            constructor(type, position, customConfig = null) {
+                this.group = new THREE.Group();
+                this.group.position.copy(position);
+                this.type = type;
+                this.growth = 0.0;
+                this.windOffset = Math.random() * 100;
+                this.petals = []; this.stems = []; this.leaves = []; this.anthers = []; this.sepals = [];
+
+                if (customConfig) {
+                    this.stageConfig = customConfig;
+                } else {
+                    this.stageConfig = STAGES.find(s => s.flowerType === type) || FLOWER_CONFIGS[type] || STAGES[0];
+                }
+
+                this.build();
+                scene.add(this.group);
+            }
+
+            getStemOffset(y, sh) {return Math.sin((y / sh) * Math.PI * 0.6) * 0.15;}
+
+            createPetalGeo(width, length, spineCurve, foldCurve, ruffleStrength = 0.04) {
+                const geo = new THREE.PlaneGeometry(width, length, 32, 32);
+                const pos = geo.attributes.position;
+                for (let i = 0; i < pos.count; i++) {
+                    const x = pos.getX(i), y = pos.getY(i);
+                    const ny = (y + length / 2) / length;
+                    const taper = 0.08 + 0.92 * Math.sin(ny * Math.PI);
+                    const edgeDist = Math.abs(x) / (width * 0.5 || 1);
+                    const ruffle = Math.sin(ny * Math.PI * 5 + x * 20) * ruffleStrength * edgeDist * ny;
+                    pos.setX(i, x * taper);
+                    pos.setZ(i, -Math.sin(ny * Math.PI) * spineCurve - Math.pow(x, 2) * (foldCurve / (width * 0.5 || 1)) + ruffle);
+                }
+                geo.computeVertexNormals(); geo.translate(0, length / 2, 0);
+                return geo;
+            }
+
+            createLeafGeo(width, length) {
+                const geo = new THREE.PlaneGeometry(width, length, 16, 16);
+                const pos = geo.attributes.position;
+                for (let i = 0; i < pos.count; i++) {
+                    const x = pos.getX(i), y = pos.getY(i), ny = (y + length / 2) / length;
+                    pos.setX(i, x * Math.sin(ny * Math.PI));
+                    pos.setZ(i, -Math.sin(ny * Math.PI) * 0.045 - Math.pow(x, 2) * 0.8);
+                }
+                geo.computeVertexNormals(); geo.translate(0, length / 2, 0);
+                return geo;
+            }
+
+            createSepals(target, count = 5, size = 0.18) {
+                const sepalMat = new THREE.MeshStandardMaterial({color: 0x1b4017, roughness: 0.6, side: THREE.DoubleSide});
+                for (let i = 0; i < count; i++) {
+                    const sepalGeo = new THREE.ConeGeometry(size * 0.35, size, 8);
+                    sepalGeo.rotateX(Math.PI / 2.2);
+                    sepalGeo.translate(0, -size * 0.4, 0);
+                    const sepal = new THREE.Mesh(sepalGeo, sepalMat);
+                    const angle = (i / count) * Math.PI * 2;
+                    sepal.rotation.y = angle;
+                    sepal.rotation.z = 0.25;
+                    sepal.scale.set(0.01, 0.01, 0.01);
+                    target.add(sepal);
+                    this.sepals.push(sepal);
+                }
+            }
+
+            createThorns(stemMesh, count = 6) {
+                const thornGeo = new THREE.ConeGeometry(0.01, 0.04, 6);
+                thornGeo.rotateZ(-Math.PI / 3);
+                const thornMat = new THREE.MeshStandardMaterial({color: 0x2b180d, roughness: 0.8});
+                for (let i = 0; i < count; i++) {
+                    const thorn = new THREE.Mesh(thornGeo, thornMat);
+                    const y = 0.2 + (i / count) * 1.0;
+                    thorn.position.set(0, y, 0);
+                    thorn.rotation.y = i * 2.1;
+                    stemMesh.add(thorn);
+                }
+            }
+
+            createFallenPetals(group, colorHex) {
+                const count = 5 + Math.floor(Math.random() * 4);
+                const mat = new THREE.MeshStandardMaterial({color: new THREE.Color(colorHex), roughness: 0.65, side: THREE.DoubleSide});
+                for (let i = 0; i < count; i++) {
+                    const p = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.06), mat);
+                    const angle = Math.random() * Math.PI * 2, r = 0.08 + Math.random() * 0.28;
+                    p.position.set(Math.cos(angle) * r, 0.035 - r * 0.04, Math.sin(angle) * r);
+                    p.rotation.set(-Math.PI / 2 + (Math.random() - 0.5) * 0.2, Math.random() * Math.PI * 2, (Math.random() - 0.5) * 0.2);
+                    p.castShadow = true; p.receiveShadow = true;
+                    group.add(p);
+                }
+            }
+
+            build() {
+                const mound = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.2, 0.35, 0.06, 16),
+                    new THREE.MeshStandardMaterial({color: 0x06080b, roughness: 0.95})
+                );
+                mound.position.y = 0.02; mound.receiveShadow = true;
+                this.group.add(mound);
+                this.createFallenPetals(this.group, this.stageConfig.fGlow);
+
+                const stemHeight = 1.45;
+                const stemMat = new THREE.MeshStandardMaterial({color: 0x1c3d1b, emissive: 0x051a08, emissiveIntensity: 0.3, roughness: 0.55, metalness: 0.05});
+                const stemGeo = new THREE.CylinderGeometry(0.022, 0.038, stemHeight, 24, 24);
+                const sPos = stemGeo.attributes.position;
+                for (let i = 0; i < sPos.count; i++) {
+                    const y = sPos.getY(i), ny = (y + stemHeight / 2) / stemHeight;
+                    sPos.setX(i, sPos.getX(i) + Math.sin(ny * Math.PI * 0.6) * 0.15);
+                }
+                stemGeo.computeVertexNormals(); stemGeo.translate(0, stemHeight / 2, 0);
+                const mainStem = new THREE.Mesh(stemGeo, stemMat);
+                mainStem.castShadow = true; this.group.add(mainStem); this.stems.push(mainStem);
+
+                if (this.type === 'rose') {
+                    this.createThorns(mainStem, 7);
+                }
+
+                const leafTex = createPetalTexture('#041f0a', '#00e5a3', '#004a2c');
+                const leafGeo = this.createLeafGeo(0.15, 0.32);
+                const leafMat = new THREE.MeshPhysicalMaterial({map: leafTex, roughness: 0.35, side: THREE.DoubleSide, emissive: 0x002211, emissiveIntensity: 0.05, transmission: 0.3, clearcoat: 0.25, clearcoatRoughness: 0.1, ior: 1.35});
+                const petioleMat = new THREE.MeshStandardMaterial({color: 0x1c3d1b, roughness: 0.8});
+                const leafNodes = [{h: 0.32, a: 0.2}, {h: 0.62, a: 1.8}, {h: 0.92, a: 3.4}];
+                for (const node of leafNodes) {
+                    for (const angle of [node.a, node.a + Math.PI]) {
+                        const lg = new THREE.Group();
+                        lg.position.set(this.getStemOffset(node.h, stemHeight), node.h, 0);
+                        lg.rotation.y = angle;
+                        const petiole = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.008, 0.04, 8), petioleMat);
+                        petiole.geometry.rotateX(Math.PI / 2); petiole.position.z = 0.02;
+                        lg.add(petiole);
+                        const leaf = new THREE.Mesh(leafGeo, leafMat);
+                        leaf.position.z = 0.04; leaf.rotation.x = Math.PI / 3;
+                        leaf.scale.set(0.01, 0.01, 0.01); leaf.castShadow = true;
+                        lg.add(leaf); this.group.add(lg); this.leaves.push(leaf);
+                    }
+                }
+
+                const offset = this.getStemOffset(stemHeight, stemHeight);
+                this.mainHead = new THREE.Group();
+                this.mainHead.position.set(offset, stemHeight - 0.04, 0);
+                this.group.add(this.mainHead);
+
+                this.createSepals(this.mainHead, 5, 0.18);
+
+                const builders = {rose: () => this.createRose(this.mainHead, 1.0), tulip: () => this.createTulip(this.mainHead, 1.0), lily: () => this.createLily(this.mainHead, 1.0), cherry: () => this.createCherry(this.mainHead, 1.0), lavender: () => this.createLavender(this.mainHead, 1.0), wild: () => this.createWildSunflower(this.mainHead, 1.05)};
+                (builders[this.type] || builders.rose)();
+
+                this.createAuraGlow(this.mainHead, 1.0);
+                this.group.scale.set(0.01, 0.01, 0.01);
+            }
+
+            createAuraGlow(target, scale) {
+                const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+                const ctx = c.getContext('2d');
+                const g = ctx.createRadialGradient(64, 64, 5, 64, 64, 60);
+                g.addColorStop(0, this.stageConfig.fGlow); g.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128);
+                const plane = new THREE.Mesh(
+                    new THREE.PlaneGeometry(0.9 * scale, 0.9 * scale),
+                    new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(c), transparent: true, blending: THREE.AdditiveBlending, opacity: 0.45, depthWrite: false})
+                );
+                plane.position.set(0, 0.25 * scale, -0.06); plane.scale.set(0.01, 0.01, 0.01);
+                target.add(plane);
+                this.petals.push({mesh: plane, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+            }
+
+            createStamens(target, scale, colorHex) {
+                const mat = new THREE.MeshBasicMaterial({color: new THREE.Color(colorHex)});
+                const len = 0.24 * scale;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    const filGeo = new THREE.CylinderGeometry(0.003, 0.003, len, 8);
+                    filGeo.translate(0, len / 2, 0);
+                    const fil = new THREE.Mesh(filGeo, mat);
+                    const ant = new THREE.Mesh(new THREE.SphereGeometry(0.015, 8, 8), mat);
+                    ant.geometry.scale(1, 1.4, 0.7); ant.position.y = len;
+                    fil.add(ant);
+                    fil.position.set(Math.cos(angle) * 0.025, 0.03, Math.sin(angle) * 0.025);
+                    fil.rotation.set(0.18, angle, 0.08);
+                    fil.scale.set(0.01, 0.01, 0.01); target.add(fil); this.anthers.push(fil);
+                }
+            }
+
+            createRose(target, scale) {
+                const layers = 7;
+                const petalsPerLayer = [3, 4, 5, 7, 8, 10, 12];
+                const innerColors = ['#1a0002', '#3a0008', '#5e0010', '#880018', '#aa0020', '#cc0a2e', '#aa0020'];
+                const outerColors = ['#660010', '#990024', '#cc0e33', '#ee2244', '#ff3355', '#ff4466', '#ee2244'];
+
+                for (let l = 0; l < layers; l++) {
+                    const count = petalsPerLayer[l];
+                    const r = (0.04 + l * 0.025) * scale;
+                    const h = (0.14 + l * 0.020) * scale;
+                    const geo = this.createPetalGeo(r * 2.0, h * 1.5, 0.1, 1.9, 0.035);
+                    const mat = new THREE.MeshPhysicalMaterial({
+                        map: createPetalTexture(innerColors[l], outerColors[l], '#ff1a30'),
+                        roughness: 0.38, metalness: 0.04,
+                        side: THREE.DoubleSide,
+                        emissive: new THREE.Color(this.stageConfig.fGlow),
+                        emissiveIntensity: 0.025,
+                        transmission: 0.42, clearcoat: 0.12, ior: 1.33
+                    });
+                    for (let p = 0; p < count; p++) {
+                        const mesh = new THREE.Mesh(geo, mat);
+                        const angle = (p / count) * Math.PI * 2 + l * 0.42;
+                        mesh.position.set(Math.cos(angle) * r * 0.42, h * 0.20, Math.sin(angle) * r * 0.42);
+                        mesh.rotation.y = -angle + Math.PI / 2;
+                        mesh.rotation.x = 0.24 + l * 0.13;
+                        mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true;
+                        target.add(mesh);
+                        this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1.4, 0.52), layer: l});
+                    }
+                }
+                this.createStamens(target, scale, this.stageConfig.pColor);
+            }
+
+            createTulip(target, scale) {
+                const geo = this.createPetalGeo(0.15 * scale * 1.8, 0.33 * scale, 0.16, 2.5, 0.025);
+                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#5c1e00', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.40, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.5, clearcoat: 0.12, ior: 1.35});
+                for (let l = 0; l < 2; l++) {
+                    for (let p = 0; p < 3; p++) {
+                        const mesh = new THREE.Mesh(geo, mat);
+                        const angle = (p / 3) * Math.PI * 2 + l * (Math.PI / 3);
+                        mesh.position.set(Math.cos(angle) * 0.025, 0.04, Math.sin(angle) * 0.025);
+                        mesh.rotation.y = -angle + Math.PI / 2; mesh.rotation.x = 0.12 - l * 0.08;
+                        mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
+                        this.petals.push({mesh, targetScale: new THREE.Vector3(0.9, 1.55, 0.9), layer: l});
+                    }
+                }
+                this.createStamens(target, scale, this.stageConfig.pColor);
+            }
+
+            createLily(target, scale) {
+                const geo = this.createPetalGeo(0.13 * scale, 0.68 * scale, 0.28, 0.8, 0.03);
+                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#004444', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.30, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.6, clearcoat: 0.2, ior: 1.33});
+                for (let p = 0; p < 6; p++) {
+                    const mesh = new THREE.Mesh(geo, mat);
+                    const angle = (p / 6) * Math.PI * 2;
+                    mesh.position.set(Math.cos(angle) * 0.035, 0.04, Math.sin(angle) * 0.035);
+                    mesh.rotation.y = -angle + Math.PI / 2; mesh.rotation.x = 0.95;
+                    mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
+                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1), layer: p % 2});
+                }
+                this.createStamens(target, scale, this.stageConfig.pColor);
+            }
+
+            createCherry(target, scale) {
+                const geo = this.createPetalGeo(0.12 * scale, 0.16 * scale, 0.08, 1.2, 0.02);
+                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#4d0014', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.45, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.65, clearcoat: 0.1, ior: 1.33});
+                for (let p = 0; p < 5; p++) {
+                    const mesh = new THREE.Mesh(geo, mat);
+                    const angle = (p / 5) * Math.PI * 2;
+                    mesh.position.set(Math.cos(angle) * 0.02, 0.03, Math.sin(angle) * 0.02);
+                    mesh.rotation.y = -angle + Math.PI / 2; mesh.rotation.x = 0.38;
+                    mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
+                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                }
+                this.createStamens(target, scale, this.stageConfig.pColor);
+            }
+
+            createLavender(target, scale) {
+                const core = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.12 * scale, 0.12 * scale, 0.03, 32),
+                    new THREE.MeshStandardMaterial({color: 0x1d1003, emissive: 0x2c1404, emissiveIntensity: 0.1, roughness: 0.95})
+                );
+                core.position.y = 0.02; core.scale.set(0.01, 0.01, 0.01); core.castShadow = true; target.add(core);
+                this.petals.push({mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                const geo = this.createPetalGeo(0.04 * scale, 0.35 * scale, 0.06, 1.8, 0.02);
+                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#3d1c02', '#ffd700', '#ff8c00'), roughness: 0.42, side: THREE.DoubleSide, emissive: new THREE.Color('#ffaa00'), emissiveIntensity: 0.04, transmission: 0.5, clearcoat: 0.08, ior: 1.33});
+                for (let p = 0; p < 24; p++) {
+                    const mesh = new THREE.Mesh(geo, mat);
+                    const angle = (p / 24) * Math.PI * 2, offR = (p % 2 === 0 ? 0.065 : 0.075) * scale;
+                    mesh.position.set(Math.cos(angle) * offR, 0.02, Math.sin(angle) * offR);
+                    mesh.rotation.y = -angle; mesh.rotation.x = p % 2 === 0 ? 0.12 : 0.22;
+                    mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
+                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1.2), layer: 1});
+                }
+            }
+
+            createWildSunflower(target, scale) {
+                const core = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.12 * scale, 0.12 * scale, 0.03, 32),
+                    new THREE.MeshStandardMaterial({color: 0xccff00, emissive: 0x88ff00, emissiveIntensity: 1.1, roughness: 0.8})
+                );
+                core.position.y = 0.02; core.scale.set(0.01, 0.01, 0.01); core.castShadow = true; target.add(core);
+                this.petals.push({mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                const geo = this.createPetalGeo(0.04 * scale, 0.35 * scale, 0.06, 1.8, 0.02);
+                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#444444', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.42, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.03, transmission: 0.5, clearcoat: 0.08, ior: 1.33});
+                for (let p = 0; p < 24; p++) {
+                    const mesh = new THREE.Mesh(geo, mat);
+                    const angle = (p / 24) * Math.PI * 2, offR = (p % 2 === 0 ? 0.065 : 0.075) * scale;
+                    mesh.position.set(Math.cos(angle) * offR, 0.02, Math.sin(angle) * offR);
+                    mesh.rotation.y = -angle; mesh.rotation.x = p % 2 === 0 ? 0.12 : 0.22;
+                    mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
+                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1.2), layer: 1});
+                }
+            }
+
+            updateGrowth(progress) {
+                this.growth = progress;
+                if (progress > 0.0) {
+                    this.group.scale.set(1.0, Math.min(progress / 0.45, 1.0), 1.0);
+                    if (progress > 0.15) {
+                        const sp = Math.min((progress - 0.15) / 0.25, 1.0);
+                        this.sepals.forEach(s => s.scale.set(sp, sp, sp));
+                    }
+                    if (progress > 0.25) {
+                        const lp = Math.min((progress - 0.25) / 0.25, 1.0);
+                        this.leaves.forEach(l => l.scale.set(lp, lp, lp));
+                    }
+                    if (progress > 0.45) {
+                        const bp = (progress - 0.45) / 0.55;
+                        this.petals.forEach(p => {
+                            const d = p.layer * 0.06, pp = Math.max(0, Math.min((bp - d) / (1 - d), 1));
+                            p.mesh.scale.set(p.targetScale.x * pp, p.targetScale.y * pp, p.targetScale.z * pp);
+                        });
+                        this.anthers.forEach(a => {
+                            const ap = Math.max(0, Math.min((bp - 0.15) / 0.85, 1));
+                            a.scale.set(ap, ap, ap);
+                        });
+                    }
+                }
+            }
+
+            sway(time) {
+                if (this.growth <= 0) return;
+                const wm = 1.0 + windStormProgress * 3.5;
+                const wave = Math.sin(time * 1.35 + this.windOffset);
+                this.group.rotation.z = wave * 0.045 * wm * this.growth;
+                this.group.rotation.x = Math.cos(time * 1.35 + this.windOffset) * 0.025 * wm * this.growth;
+                this.mainHead.rotation.z = wave * 0.015 * this.growth;
+                this.leaves.forEach((leaf, i) => {
+                    const ls = 3.2 + i * 0.4;
+                    leaf.rotation.z = Math.sin(time * ls + this.windOffset + i * 2) * 0.08 * this.growth;
+                    leaf.rotation.x = (Math.PI / 2.4) + Math.cos(time * (ls - 0.5) + this.windOffset + i) * 0.05 * this.growth;
+                });
+            }
+        }
+
+        // =====================================================================
+        //  SPAWN ALL STORY FLOWERS
+        // =====================================================================
+        const flowers = STAGES.map(stg => new ProceduralFlower(stg.flowerType, new THREE.Vector3(stg.flowerPos.x, stg.flowerPos.y, stg.flowerPos.z)));
+
+        const extraRoses = [
+            {pos: new THREE.Vector3(-1.1, -0.8, 0.4), cfg: {fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'}},
+            {pos: new THREE.Vector3(1.1, -0.8, 0.4), cfg: {fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'}},
+            {pos: new THREE.Vector3(0, -0.8, 0.1), cfg: {fColor: '#ffb7c5', fGlow: '#ff3b6b', pColor: '#ffff00'}}
+        ].map(c => {
+            const f = new ProceduralFlower('rose', c.pos, c.cfg);
+            f.updateGrowth(0); return f;
+        });
+
+        // =====================================================================
+        //  PLANT MODE SYSTEM
+        // =====================================================================
+        let isPlantMode = false;
+        let selectedFlowerType = 'rose';
+        let plantedFlowersArr = [];
+        let plantedCount = 0;
+
+        const raycaster = new THREE.Raycaster();
+        const mousePt = new THREE.Vector2();
+
+        function togglePlantMode() {
+            isPlantMode = !isPlantMode;
+            const btn = document.getElementById('btn-plant-toggle');
+            const panel = document.getElementById('flower-selector-panel');
+            if (isPlantMode) {
+                if (isWalkMode) setCameraMode('free');
+                btn.classList.add('active');
+                btn.textContent = '✕ Exit Plant Mode';
+                panel.classList.add('visible');
+                container.classList.add('plant-mode');
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🌱 Plant a Flower';
+                panel.classList.remove('visible');
+                container.classList.remove('plant-mode');
+            }
+        }
+
+        function selectFlowerType(el, type) {
+            selectedFlowerType = type;
+            document.querySelectorAll('.flower-opt-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        renderer.domElement.addEventListener('click', (e) => {
+            if (isTransitioning) return;
+
+            mousePt.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mousePt.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mousePt, camera);
+
+            if (isPlantMode) {
+                const hits = raycaster.intersectObject(terrain);
+                if (hits.length > 0) {
+                    const pt = hits[0].point;
+                    plantFlowerAt(pt.x, pt.y, pt.z, selectedFlowerType);
+                }
+            } else if (cameraMode === 'free' || cameraMode === 'flower') {
+                let nearestFlower = null;
+                let minDist = Infinity;
+                const allFlowers = [...flowers, ...extraRoses, ...plantedFlowersArr];
+                allFlowers.forEach(f => {
+                    if (f.growth > 0.1) {
+                        const fWorldPos = new THREE.Vector3();
+                        f.group.getWorldPosition(fWorldPos);
+                        fWorldPos.y += 0.8;
+                        const screenPt = fWorldPos.clone().project(camera);
+                        const dx = screenPt.x - mousePt.x;
+                        const dy = screenPt.y - mousePt.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < 0.18 && dist < minDist) {
+                            minDist = dist;
+                            nearestFlower = fWorldPos;
+                        }
+                    }
+                });
+                if (nearestFlower) {
+                    focusCameraOnPoint(nearestFlower.x, nearestFlower.y, nearestFlower.z, 2.2);
+                    setCameraMode('flower');
+                }
+            }
+        });
+
+        function plantFlowerAt(x, y, z, type) {
+            const cfg = FLOWER_CONFIGS[type] || FLOWER_CONFIGS.rose;
+            const flower = new ProceduralFlower(type, new THREE.Vector3(x, y, z), cfg);
+            flower.updateGrowth(0);
+            plantedFlowersArr.push(flower);
+            plantedCount++;
+            const ctr = document.getElementById('plant-counter');
+            ctr.textContent = `${plantedCount} flower${plantedCount !== 1 ? 's' : ''} planted`;
+            ctr.style.opacity = 1;
+            const growObj = {p: 0};
+            gsap.to(growObj, {p: 1.0, duration: 7.0, ease: 'sine.out', onUpdate: () => flower.updateGrowth(growObj.p)});
+            spawnPlantParticles(x, y, z, cfg.fGlow);
+        }
+
+        function spawnPlantParticles(x, y, z, colorHex) {
+            for (let i = 0; i < 20; i++) {
+                const geo = new THREE.SphereGeometry(0.016, 4, 4);
+                const col = new THREE.Color(colorHex);
+                col.offsetHSL(0, -0.1 + Math.random() * 0.2, -0.06 + Math.random() * 0.12);
+                const mat = new THREE.MeshBasicMaterial({color: col, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false});
+                const p = new THREE.Mesh(geo, mat);
+                p.position.set(x, y + 0.04, z);
+                scene.add(p);
+                const angle = Math.random() * Math.PI * 2, speed = 0.35 + Math.random() * 0.65;
+                gsap.to(p.position, {x: x + Math.cos(angle) * speed, y: y + 0.5 + Math.random() * 0.9, z: z + Math.sin(angle) * speed, duration: 1.1 + Math.random() * 0.5, ease: 'power2.out'});
+                gsap.to(mat, {opacity: 0, duration: 1.1 + Math.random() * 0.5, ease: 'power1.in', onComplete: () => {scene.remove(p); geo.dispose(); mat.dispose();}});
+            }
+        }
+
+        // =====================================================================
+        //  UNIVERSAL 360° CAMERA MODES & MOVEMENT SYSTEM
+        // =====================================================================
+        let cameraMode = 'story';
+        let isWalkMode = false;
+
+        let orbitTheta = 0, orbitPhi = Math.PI / 4.2, orbitRadius = 6.5;
+        let targetOrbitTheta = 0, targetOrbitPhi = Math.PI / 4.2, targetOrbitRadius = 6.5;
+        let panOffset = new THREE.Vector3(0, 0.7, 1.0);
+        let targetPanOffset = new THREE.Vector3(0, 0.7, 1.0);
+
+        let isLeftDragging = false;
+        let isRightPanDragging = false;
+        let lastPointerX = 0, lastPointerY = 0;
+
+        let walkPos = new THREE.Vector3(0, 0.2, 5.5);
+        let walkYaw = 0, walkPitch = 0;
+        const keysPressed = {};
+
+        function setCameraMode(mode) {
+            cameraMode = mode;
+            document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+
+            const btnMap = {story: 'cambtn-story', free: 'cambtn-free', flower: 'cambtn-flower', top: 'cambtn-top', walk: 'cambtn-walk'};
+            const btn = document.getElementById(btnMap[mode]);
+            if (btn) btn.classList.add('active');
+
+            const hud = document.getElementById('walk-hud');
+            const dpad = document.getElementById('dpad-container');
+            const toast = document.getElementById('cam-hint-toast');
+
+            isWalkMode = (mode === 'walk');
+
+            if (isWalkMode) {
+                if (isPlantMode) togglePlantMode();
+                hud.classList.add('active');
+                dpad.classList.add('active');
+                toast.classList.remove('visible');
+                container.className = 'walk-mode';
+                walkPos.set(camera.position.x, getTerrainHeight(camera.position.x, camera.position.z) + 0.85, camera.position.z);
+            } else {
+                hud.classList.remove('active');
+                dpad.classList.remove('active');
+                container.className = '';
+
+                if (mode === 'top') {
+                    targetOrbitPhi = 0.15;
+                    targetOrbitRadius = 11.0;
+                    showCamHint('Aerial Top-Down View • Drag to Orbit • Scroll to Zoom');
+                } else if (mode === 'free') {
+                    showCamHint('360° Free Camera • Drag Left/Right to Orbit • Right-Click/2-Finger Drag to Pan Target');
+                } else if (mode === 'flower') {
+                    const stg = STAGES[currentStageIndex];
+                    focusCameraOnPoint(stg.flowerPos.x, stg.flowerPos.y + 0.8, stg.flowerPos.z, 2.2);
+                    showCamHint('Flower Close-Up • Drag to Orbit 360° • Click any flower to focus');
+                } else if (mode === 'story') {
+                    const stg = STAGES[currentStageIndex];
+                    gsap.to(camera.position, {x: stg.camPos.x, y: stg.camPos.y, z: stg.camPos.z, duration: 2.0, ease: 'power2.inOut'});
+                    targetPanOffset.set(stg.camLook.x, stg.camLook.y, stg.camLook.z);
+                    toast.classList.remove('visible');
+                }
+            }
+        }
+
+        function showCamHint(text) {
+            const toast = document.getElementById('cam-hint-toast');
+            toast.textContent = text;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 5000);
+        }
+
+        function focusCameraOnPoint(x, y, z, radius = 2.4) {
+            targetPanOffset.set(x, y, z);
+            targetOrbitRadius = radius;
+            targetOrbitPhi = Math.PI / 4.5;
+        }
+
+        window.addEventListener('mousedown', e => {
+            if (isWalkMode || isPlantMode) return;
+            if (e.button === 2 || e.shiftKey) {
+                isRightPanDragging = true;
+            } else {
+                isLeftDragging = true;
+            }
+            lastPointerX = e.clientX;
+            lastPointerY = e.clientY;
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (isWalkMode || isPlantMode) return;
+            const dx = e.clientX - lastPointerX;
+            const dy = e.clientY - lastPointerY;
+
+            if (isLeftDragging) {
+                if (cameraMode === 'story') setCameraMode('free');
+                targetOrbitTheta -= dx * 0.005;
+                targetOrbitPhi = Math.max(0.08, Math.min(Math.PI / 2.05, targetOrbitPhi - dy * 0.005));
+            } else if (isRightPanDragging) {
+                if (cameraMode === 'story') setCameraMode('free');
+                const cosY = Math.cos(orbitTheta);
+                const sinY = Math.sin(orbitTheta);
+                const panSpeed = 0.006 * targetOrbitRadius;
+                targetPanOffset.x -= (dx * cosY + dy * sinY) * panSpeed * 0.5;
+                targetPanOffset.z -= (-dx * sinY + dy * cosY) * panSpeed * 0.5;
+                targetPanOffset.y = Math.max(-0.5, Math.min(6.0, targetPanOffset.y + dy * panSpeed * 0.3));
+            }
+
+            lastPointerX = e.clientX;
+            lastPointerY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {isLeftDragging = false; isRightPanDragging = false;});
+        window.addEventListener('contextmenu', e => e.preventDefault());
+
+        window.addEventListener('wheel', e => {
+            if (isWalkMode || isPlantMode) return;
+            if (cameraMode === 'story') setCameraMode('free');
+            targetOrbitRadius = Math.max(0.6, Math.min(18.0, targetOrbitRadius + e.deltaY * 0.005));
+        });
+
+        let initTouchDist = 0;
+        let initTouchMidX = 0, initTouchMidY = 0;
+
+        window.addEventListener('touchstart', e => {
+            if (isWalkMode || isPlantMode) return;
+            if (e.touches.length === 1) {
+                isLeftDragging = true;
+                lastPointerX = e.touches[0].clientX;
+                lastPointerY = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                isRightPanDragging = true;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initTouchDist = Math.hypot(dx, dy);
+                initTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                initTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            }
+        }, {passive: true});
+
+        window.addEventListener('touchmove', e => {
+            if (isWalkMode || isPlantMode) return;
+            if (e.touches.length === 1 && isLeftDragging) {
+                if (cameraMode === 'story') setCameraMode('free');
+                const dx = e.touches[0].clientX - lastPointerX;
+                const dy = e.touches[0].clientY - lastPointerY;
+                targetOrbitTheta -= dx * 0.006;
+                targetOrbitPhi = Math.max(0.08, Math.min(Math.PI / 2.05, targetOrbitPhi - dy * 0.006));
+                lastPointerX = e.touches[0].clientX;
+                lastPointerY = e.touches[0].clientY;
+            } else if (e.touches.length === 2 && isRightPanDragging) {
+                if (cameraMode === 'story') setCameraMode('free');
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.hypot(dx, dy);
+                const deltaDist = initTouchDist - dist;
+                targetOrbitRadius = Math.max(0.6, Math.min(18.0, targetOrbitRadius + deltaDist * 0.015));
+                initTouchDist = dist;
+
+                const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                const pdx = midX - initTouchMidX;
+                const pdy = midY - initTouchMidY;
+                const cosY = Math.cos(orbitTheta), sinY = Math.sin(orbitTheta);
+                targetPanOffset.x -= (pdx * cosY + pdy * sinY) * 0.003;
+                targetPanOffset.z -= (-pdx * sinY + pdy * cosY) * 0.003;
+                initTouchMidX = midX; initTouchMidY = midY;
+            }
+        }, {passive: true});
+
+        window.addEventListener('touchend', () => {isLeftDragging = false; isRightPanDragging = false;});
+
+        // ── WALK MODE CONTROLS ──
+        window.addEventListener('keydown', e => {keysPressed[e.code] = true;});
+        window.addEventListener('keyup', e => {keysPressed[e.code] = false;});
+
+        function bindDpad(id, code) {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('touchstart', e => {e.preventDefault(); keysPressed[code] = true;});
+            btn.addEventListener('touchend', e => {e.preventDefault(); keysPressed[code] = false;});
+            btn.addEventListener('mousedown', () => {keysPressed[code] = true;});
+            btn.addEventListener('mouseup', () => {keysPressed[code] = false;});
+        }
+        bindDpad('dpad-up', 'KeyW');
+        bindDpad('dpad-down', 'KeyS');
+        bindDpad('dpad-left', 'KeyA');
+        bindDpad('dpad-right', 'KeyD');
+
+        function updateWalkMode(delta) {
+            if (!isWalkMode) return;
+            const moveSpeed = 2.4 * delta;
+            const dir = new THREE.Vector3();
+            if (keysPressed['KeyW'] || keysPressed['ArrowUp']) dir.z -= 1;
+            if (keysPressed['KeyS'] || keysPressed['ArrowDown']) dir.z += 1;
+            if (keysPressed['KeyA'] || keysPressed['ArrowLeft']) dir.x -= 1;
+            if (keysPressed['KeyD'] || keysPressed['ArrowRight']) dir.x += 1;
+            dir.normalize();
+
+            const cosY = Math.cos(walkYaw), sinY = Math.sin(walkYaw);
+            const worldDx = (dir.x * cosY - dir.z * sinY) * moveSpeed;
+            const worldDz = (dir.x * sinY + dir.z * cosY) * moveSpeed;
+
+            walkPos.x = Math.max(-13, Math.min(13, walkPos.x + worldDx));
+            walkPos.z = Math.max(-13, Math.min(13, walkPos.z + worldDz));
+            walkPos.y = getTerrainHeight(walkPos.x, walkPos.z) + 0.85;
+
+            camera.position.copy(walkPos);
+
+            const lookTarget = new THREE.Vector3(
+                walkPos.x - Math.sin(walkYaw) * Math.cos(walkPitch),
+                walkPos.y + Math.sin(walkPitch),
+                walkPos.z - Math.cos(walkYaw) * Math.cos(walkPitch)
+            );
+            camera.lookAt(lookTarget);
+        }
+
+        let isWalkLooking = false;
+        let lastWalkPointerX = 0, lastWalkPointerY = 0;
+
+        window.addEventListener('mousedown', e => {
+            if (isWalkMode && !isPlantMode) {
+                isWalkLooking = true;
+                lastWalkPointerX = e.clientX;
+                lastWalkPointerY = e.clientY;
+            }
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (isWalkMode && isWalkLooking && !isPlantMode) {
+                const dx = e.clientX - lastWalkPointerX;
+                const dy = e.clientY - lastWalkPointerY;
+                walkYaw -= dx * 0.0035;
+                walkPitch = Math.max(-1.1, Math.min(1.1, walkPitch - dy * 0.0035));
+                lastWalkPointerX = e.clientX;
+                lastWalkPointerY = e.clientY;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {isWalkLooking = false;});
+
+        // =====================================================================
+        //  STAGE PROGRESS DOTS
+        // =====================================================================
+        function updateStageDots(activeIdx) {
+            const wrap = document.getElementById('stage-progress');
+            wrap.innerHTML = '';
+            for (let i = 0; i < STAGES.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'stage-dot';
+                if (i < activeIdx) dot.classList.add('completed');
+                if (i === activeIdx) dot.classList.add('active');
+                wrap.appendChild(dot);
+            }
+        }
+
+        // =====================================================================
+        //  JOURNEY CONTROL
+        // =====================================================================
+        function beginJourney() {
+            audio.init();
+            document.getElementById('stage-progress').style.opacity = '1';
+            document.getElementById('cam-bar').style.opacity = '1';
+            document.getElementById('plant-panel').style.display = 'flex';
+            updateStageDots(0);
+            gsap.to('#intro-screen', {
+                opacity: 0, duration: 2.0, onComplete: () => {
+                    document.getElementById('intro-screen').style.display = 'none';
+                    triggerStage(0);
+                }
+            });
+        }
+
+        function triggerStage(index) {
+            currentStageIndex = index;
+            isTransitioning = true;
+            updateStageDots(index);
+            const stage = STAGES[index];
+            const activeFlower = flowers[index];
+
+            gsap.to('#btn-next', {
+                opacity: 0, duration: 0.5, onComplete: () => {
+                    const btn = document.getElementById('btn-next');
+                    btn.classList.remove('pulsing');
+                    btn.style.pointerEvents = 'none';
+                }
+            });
+            document.getElementById('stage-title').classList.remove('active');
+            gsap.to('#stage-title', {opacity: 0, duration: 0.5});
+            gsap.to('#stage-sub', {opacity: 0, y: 20, duration: 0.8});
+
+            targetPanOffset.set(stage.camLook.x, stage.camLook.y, stage.camLook.z);
+
+            if (cameraMode === 'story') {
+                gsap.to(camera.position, {x: stage.camPos.x, y: stage.camPos.y, z: stage.camPos.z, duration: 6.8, ease: 'power2.inOut'});
+            }
+
+            const look = {x: camera.userData.lookX || 0, y: camera.userData.lookY || 0, z: camera.userData.lookZ || 0};
+            gsap.to(look, {
+                x: stage.camLook.x, y: stage.camLook.y, z: stage.camLook.z,
+                duration: 6.8, ease: 'power2.inOut',
+                onUpdate: () => {
+                    if (cameraMode === 'story') {
+                        camera.lookAt(new THREE.Vector3(look.x, look.y, look.z));
+                    }
+                    camera.userData.lookX = look.x; camera.userData.lookY = look.y; camera.userData.lookZ = look.z;
+                },
+                onComplete: () => {
+                    document.getElementById('stage-title').innerText = stage.title;
+                    document.getElementById('stage-title').classList.add('active');
+
+                    gsap.to(scene.fog.color, {r: new THREE.Color(stage.fogColor).r, g: new THREE.Color(stage.fogColor).g, b: new THREE.Color(stage.fogColor).b, duration: 5.0});
+                    gsap.to(renderer, {duration: 5.0, onUpdate: () => renderer.setClearColor(scene.fog.color)});
+
+                    const th = new THREE.Color(stage.skyHorizon);
+                    gsap.to(skyColors.horizon, {r: th.r, g: th.g, b: th.b, duration: 5.0, onUpdate: redrawSkyDome});
+                    gsap.to(sunLight, {intensity: stage.sunIntensity, duration: 5.0});
+                    gsap.to(sunLight.color, {r: new THREE.Color(stage.lightColor).r, g: new THREE.Color(stage.lightColor).g, b: new THREE.Color(stage.lightColor).b, duration: 5.0});
+
+                    const go = {progress: 0};
+                    gsap.to(go, {
+                        progress: 1.0, duration: 8.5, ease: 'sine.out',
+                        onUpdate: () => activeFlower.updateGrowth(go.progress),
+                        onComplete: () => {
+                            document.getElementById('stage-sub').innerText = stage.sub;
+                            gsap.to('#stage-sub', {opacity: 1, y: 0, duration: 1.5});
+                            isTransitioning = false;
+
+                            if (currentStageIndex < STAGES.length - 1) {
+                                const btn = document.getElementById('btn-next');
+                                btn.innerText = 'Walk Forward';
+                                btn.style.pointerEvents = 'auto';
+                                gsap.to('#btn-next', {opacity: 1, duration: 1.0, onComplete: () => btn.classList.add('pulsing')});
+                            } else {
+                                const btn = document.getElementById('btn-next');
+                                btn.innerText = 'Open Her Scroll';
+                                btn.style.pointerEvents = 'auto';
+                                btn.classList.remove('pulsing');
+                                gsap.to('#btn-next', {opacity: 1, duration: 1.5});
+                                btn.onclick = openLoveLetter;
+
+                                document.getElementById('btn-breeze').style.display = 'inline-block';
+                                document.getElementById('btn-breeze').style.pointerEvents = 'auto';
+                                gsap.to('#btn-breeze', {opacity: 1, duration: 1.5});
+
+                                const cg = {progress: 0};
+                                gsap.to(cg, {progress: 1.0, duration: 8.5, ease: 'sine.out', onUpdate: () => extraRoses.forEach(r => r.updateGrowth(cg.progress))});
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // =====================================================================
+        //  PETAL STORM
+        // =====================================================================
+        let windStormProgress = 0, isStormActive = false;
+        function triggerPetalStorm() {
+            if (isStormActive) return;
+            isStormActive = true;
+            const tl = gsap.timeline({onComplete: () => isStormActive = false});
+            const s = {p: 0};
+            tl.to(s, {p: 1.0, duration: 2.2, ease: 'power2.out', onUpdate: () => windStormProgress = s.p})
+                .to(s, {p: 0.0, duration: 3.5, delay: 2.5, ease: 'sine.inOut', onUpdate: () => windStormProgress = s.p});
+        }
+
+        function openLoveLetter() {document.getElementById('letter-modal').classList.add('active');}
+        function closeLoveLetter() {document.getElementById('letter-modal').classList.remove('active');}
+
+        function nextStage() {
+            if (isTransitioning) return;
+            const next = currentStageIndex + 1;
+            if (next < STAGES.length) triggerStage(next);
+        }
+
+        // =====================================================================
+        //  MAIN RENDERING ANIMATION LOOP
+        // =====================================================================
+        camera.userData = {lookX: 0, lookY: 1.5, lookZ: 0};
+        const clock = new THREE.Clock();
+        const stars = scene.children.find(c => c instanceof THREE.Points);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            if (isWalkMode) {
+                updateWalkMode(delta);
+            }
+
+            // Grass wind sway
+            for (let i = 0; i < grassCount; i++) {
+                const g = grassData[i];
+                dummy.position.copy(g.pos);
+                let bendX = 0, bendZ = 0;
+                flowers.forEach((fl, idx) => {
+                    if (fl.growth > 0.01) {
+                        const fp = STAGES[idx].flowerPos, dx = g.pos.x - fp.x, dz = g.pos.z - fp.z, dist = Math.hypot(dx, dz);
+                        if (dist < 0.95) {const force = (1 - dist / 0.95) * 0.42 * fl.growth, ang = Math.atan2(dx, dz); bendX += Math.sin(ang) * force; bendZ += Math.cos(ang) * force;}
+                    }
+                });
+                const wm = 1 + windStormProgress * 3.5;
+                dummy.rotation.set(g.rotX + Math.sin(time * g.windSpeed + g.windOffset) * 0.14 * wm + bendZ, g.rotZ + Math.cos(time * g.windSpeed + g.windOffset) * 0.09 * wm - bendX, 0);
+                dummy.scale.set(1, 1, 1); dummy.updateMatrix(); grassMesh.setMatrixAt(i, dummy.matrix);
+            }
+            grassMesh.instanceMatrix.needsUpdate = true;
+
+            // Tiny flowers sway
+            for (let i = 0; i < tinyCount; i++) {
+                const tf = tinyFlowerData[i];
+                const wm = 1 + windStormProgress * 3.5;
+                dummy.position.copy(tf.pos);
+                dummy.rotation.set(tf.rotX + Math.sin(time * tf.windSpeed + tf.windOffset) * 0.14 * wm, tf.rotZ + Math.cos(time * tf.windSpeed + tf.windOffset) * 0.09 * wm, 0);
+                dummy.scale.set(1, 1, 1); dummy.updateMatrix(); tinyFlowerMesh.setMatrixAt(i, dummy.matrix);
+            }
+            tinyFlowerMesh.instanceMatrix.needsUpdate = true;
+
+            // Heart petals fall
+            const pm = 1 + windStormProgress * 4;
+            for (let i = 0; i < petalCount; i++) {
+                const p = petals[i];
+                p.pos.y -= p.speedY * pm;
+                p.pos.x += Math.sin(time * 0.8 + p.rotSpeed) * 0.005 * pm + windStormProgress * 0.035;
+                p.rotX += p.rotSpeed * pm; p.rotY += p.rotSpeed * 0.5 * pm;
+                if (p.pos.y < -1.0) {p.pos.y = 5; p.pos.x = (Math.random() - 0.5) * 12;}
+                petalDummy.position.copy(p.pos);
+                petalDummy.rotation.set(p.rotX, p.rotY, p.rotZ);
+                petalDummy.updateMatrix(); petalMesh.setMatrixAt(i, petalDummy.matrix);
+            }
+            petalMesh.instanceMatrix.needsUpdate = true;
+
+            // Fireflies drift
+            fireflies.forEach(f => {
+                f.mesh.position.set(f.basePos.x + Math.sin(time * f.speed + f.seedX) * 0.6, f.basePos.y + Math.cos(time * f.speed * 0.85 + f.seedY) * 0.35, f.basePos.z + Math.sin(time * f.speed * 1.15 + f.seedZ) * 0.6);
+                const pulse = Math.sin(time * f.pulseSpeed + f.pulseOffset), sc = 0.15 + (pulse * 0.5 + 0.5) * 0.85;
+                f.mesh.scale.set(sc, sc, sc);
+            });
+
+            // Mist drift
+            mists.forEach((m, idx) => {
+                m.mesh.position.x = m.basePos.x + Math.sin(time * m.speed + m.seedX) * 0.35;
+                m.mesh.position.z = m.basePos.z + Math.cos(time * m.speed * 0.9 + m.seedZ) * 0.35;
+                m.mesh.rotation.z = m.baseRot + Math.sin(time * 0.04 + idx) * 0.2;
+            });
+
+            // Flower sway
+            flowers.forEach(f => f.sway(time));
+            extraRoses.forEach(r => r.sway(time));
+            plantedFlowersArr.forEach(f => f.sway(time));
+
+            // Smooth Camera Interpolation
+            if (!isWalkMode && cameraMode !== 'story') {
+                orbitTheta += (targetOrbitTheta - orbitTheta) * 0.08;
+                orbitPhi += (targetOrbitPhi - orbitPhi) * 0.08;
+                orbitRadius += (targetOrbitRadius - orbitRadius) * 0.08;
+                panOffset.lerp(targetPanOffset, 0.08);
+
+                const swX = Math.sin(time * 0.5) * 0.03;
+                const swY = Math.cos(time * 0.6) * 0.02;
+                const swZ = Math.sin(time * 0.4) * 0.03;
+
+                const cx = panOffset.x + orbitRadius * Math.sin(orbitTheta) * Math.sin(orbitPhi);
+                const cy = panOffset.y + orbitRadius * Math.cos(orbitPhi);
+                const cz = panOffset.z + orbitRadius * Math.cos(orbitTheta) * Math.sin(orbitPhi);
+
+                camera.position.set(cx + swX, cy + swY, cz + swZ);
+                camera.lookAt(panOffset);
+            }
+
+            // Star breathing
+            const breathing = 0.35 + Math.sin(time * 0.8) * 0.25;
+            if (stars) stars.material.opacity = breathing;
+            constellationLine.material.opacity = 0.16 + Math.sin(time * 1.1) * 0.12;
+
+            composer.render();
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>
