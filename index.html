@@ -837,7 +837,7 @@
     <div class="vignette"></div>
     <div class="film-grain"></div>
 
-    <div class="branding">Designed by Cipher Stack</div>
+    <div class="branding">Designed by Saimur Rahman</div>
 
     <!-- Stage Progress Dots -->
     <div class="stage-progress" id="stage-progress"></div>
@@ -956,7 +956,7 @@
         //  AUDIO ENGINE
         // =====================================================================
         class AudioEngine {
-            constructor() {this.ctx = null; this.isInitialized = false;}
+            constructor() { this.ctx = null; this.isInitialized = false; }
             init() {
                 if (this.isInitialized) return;
                 try {
@@ -986,9 +986,9 @@
                         const t = this.ctx.currentTime;
                         filter.frequency.exponentialRampToValueAtTime(150 + Math.random() * 350, t + 2 + Math.random() * 3);
                     }, 4000);
-                    setInterval(() => {if (Math.random() > 0.4) this.playChime();}, 5000);
+                    setInterval(() => { if (Math.random() > 0.4) this.playChime(); }, 5000);
                     this.isInitialized = true;
-                } catch (e) {console.warn('Web Audio blocked.');}
+                } catch (e) { console.warn('Web Audio blocked.'); }
             }
             playChime() {
                 if (!this.ctx) return;
@@ -1121,66 +1121,66 @@
             {
                 title: "Some feelings are difficult to put into words.",
                 sub: "Some things begin quietly.",
-                camPos: {x: 0, y: 1.5, z: 5.0}, camLook: {x: 0, y: 0.7, z: 1.5},
+                camPos: { x: 0, y: 1.5, z: 5.0 }, camLook: { x: 0, y: 0.7, z: 1.5 },
                 lightColor: 0xff4d5a, fogColor: 0x1a060c, skyHorizon: '#5e1322',
                 sunIntensity: 1.8, flowerType: 'rose',
-                flowerPos: {x: 0, y: -0.8, z: 1.5},
+                flowerPos: { x: 0, y: -0.8, z: 1.5 },
                 fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'
             },
             {
                 title: "So sometimes they are planted instead.",
                 sub: "Without asking for attention.",
-                camPos: {x: -2.8, y: 1.3, z: 4.0}, camLook: {x: -2.0, y: 0.8, z: 1.0},
+                camPos: { x: -2.8, y: 1.3, z: 4.0 }, camLook: { x: -2.0, y: 0.8, z: 1.0 },
                 lightColor: 0xffaa00, fogColor: 0x1c1206, skyHorizon: '#5c2a04',
                 sunIntensity: 2.0, flowerType: 'tulip',
-                flowerPos: {x: -2.0, y: -0.8, z: 1.0},
+                flowerPos: { x: -2.0, y: -0.8, z: 1.0 },
                 fColor: '#ffffe6', fGlow: '#ffaa00', pColor: '#ff0055'
             },
             {
                 title: "Every flower here carries a thought that was never spoken.",
                 sub: "But still manages to change everything.",
-                camPos: {x: 2.8, y: 1.6, z: 4.2}, camLook: {x: 2.0, y: 0.9, z: 1.5},
+                camPos: { x: 2.8, y: 1.6, z: 4.2 }, camLook: { x: 2.0, y: 0.9, z: 1.5 },
                 lightColor: 0x00ffff, fogColor: 0x061c22, skyHorizon: '#08444a',
                 sunIntensity: 2.2, flowerType: 'lily',
-                flowerPos: {x: 2.0, y: -0.8, z: 1.5},
+                flowerPos: { x: 2.0, y: -0.8, z: 1.5 },
                 fColor: '#eaffff', fGlow: '#00ffff', pColor: '#ccff00'
             },
             {
                 title: "Some people leave footprints in places they never visit again.",
                 sub: "One moment at a time.",
-                camPos: {x: -1.2, y: 1.4, z: 3.0}, camLook: {x: -0.5, y: 0.8, z: -1.0},
+                camPos: { x: -1.2, y: 1.4, z: 3.0 }, camLook: { x: -0.5, y: 0.8, z: -1.0 },
                 lightColor: 0xff3b6b, fogColor: 0x1d0614, skyHorizon: '#4d0635',
                 sunIntensity: 2.0, flowerType: 'cherry',
-                flowerPos: {x: -0.5, y: -0.8, z: -1.0},
+                flowerPos: { x: -0.5, y: -0.8, z: -1.0 },
                 fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'
             },
             {
                 title: "And some gardens are created simply because someone existed.",
                 sub: "And before you realise it...",
-                camPos: {x: 1.8, y: 1.4, z: 2.8}, camLook: {x: 0.6, y: 0.8, z: -1.5},
+                camPos: { x: 1.8, y: 1.4, z: 2.8 }, camLook: { x: 0.6, y: 0.8, z: -1.5 },
                 lightColor: 0xffa200, fogColor: 0x1d1003, skyHorizon: '#5e2908',
                 sunIntensity: 2.4, flowerType: 'lavender',
-                flowerPos: {x: 0.6, y: -0.8, z: -1.5},
+                flowerPos: { x: 0.6, y: -0.8, z: -1.5 },
                 fColor: '#ffffe6', fGlow: '#ffcc00', pColor: '#ff5500'
             },
             {
                 title: "Thank you for being part of the story.",
                 sub: "The garden exists.",
-                camPos: {x: 0, y: 2.4, z: 6.8}, camLook: {x: 0, y: 0.8, z: -0.5},
+                camPos: { x: 0, y: 2.4, z: 6.8 }, camLook: { x: 0, y: 0.8, z: -0.5 },
                 lightColor: 0x00ffff, fogColor: 0x03121d, skyHorizon: '#0c3254',
                 sunIntensity: 2.2, flowerType: 'wild',
-                flowerPos: {x: 0, y: -0.8, z: -1.0},
+                flowerPos: { x: 0, y: -0.8, z: -1.0 },
                 fColor: '#eaffff', fGlow: '#00ffff', pColor: '#ccff00'
             }
         ];
 
         const FLOWER_CONFIGS = {
-            rose: {fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffe000'},
-            tulip: {fColor: '#fffae6', fGlow: '#ffaa00', pColor: '#ff2244'},
-            lily: {fColor: '#eaffff', fGlow: '#00ddff', pColor: '#ccff00'},
-            cherry: {fColor: '#ffe8f0', fGlow: '#ff4488', pColor: '#ffff99'},
-            lavender: {fColor: '#fffae6', fGlow: '#ffcc00', pColor: '#ff5500'},
-            wild: {fColor: '#eaffff', fGlow: '#00ffcc', pColor: '#ddff00'}
+            rose: { fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffe000' },
+            tulip: { fColor: '#fffae6', fGlow: '#ffaa00', pColor: '#ff2244' },
+            lily: { fColor: '#eaffff', fGlow: '#00ddff', pColor: '#ccff00' },
+            cherry: { fColor: '#ffe8f0', fGlow: '#ff4488', pColor: '#ffff99' },
+            lavender: { fColor: '#fffae6', fGlow: '#ffcc00', pColor: '#ff5500' },
+            wild: { fColor: '#eaffff', fGlow: '#00ffcc', pColor: '#ddff00' }
         };
 
         let currentStageIndex = 0;
@@ -1196,7 +1196,7 @@
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
         camera.position.set(0, 1.5, 9);
 
-        const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false, powerPreference: 'high-performance'});
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
@@ -1232,7 +1232,7 @@
         // Volumetric Sun Beam
         const beamGeo = new THREE.CylinderGeometry(0.2, 3.5, 18, 32, 1, true);
         beamGeo.translate(0, -9, 0); beamGeo.rotateX(Math.PI / 5); beamGeo.rotateZ(-Math.PI / 10);
-        const beamMat = new THREE.MeshBasicMaterial({color: 0x00e5ff, transparent: true, opacity: 0.04, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false});
+        const beamMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.04, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false });
         const sunBeam = new THREE.Mesh(beamGeo, beamMat);
         sunBeam.position.set(-6, 15, -6); scene.add(sunBeam);
 
@@ -1243,7 +1243,7 @@
         const skyTexture = new THREE.CanvasTexture(skyCanvas);
         const skyDome = new THREE.Mesh(
             new THREE.SphereGeometry(45, 32, 15),
-            new THREE.MeshBasicMaterial({map: skyTexture, side: THREE.BackSide, fog: false})
+            new THREE.MeshBasicMaterial({ map: skyTexture, side: THREE.BackSide, fog: false })
         );
         scene.add(skyDome);
 
@@ -1287,11 +1287,11 @@
         }
         const starGeo = new THREE.BufferGeometry();
         starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
-        const starMat = new THREE.PointsMaterial({color: 0xffffff, size: 0.05, transparent: true, opacity: 0.6, depthWrite: false, fog: false});
+        const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, transparent: true, opacity: 0.6, depthWrite: false, fog: false });
         scene.add(new THREE.Points(starGeo, starMat));
         const constellationLine = new THREE.Line(
             new THREE.BufferGeometry().setFromPoints(heartPoints),
-            new THREE.LineBasicMaterial({color: 0xff0055, transparent: true, opacity: 0.35, depthWrite: false, fog: false})
+            new THREE.LineBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.35, depthWrite: false, fog: false })
         );
         scene.add(constellationLine);
 
@@ -1299,7 +1299,7 @@
         const shootingStarGeo = new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(0, 0, 0), new THREE.Vector3(-0.6, 0.45, 0.3)
         ]);
-        const shootingStarMat = new THREE.LineBasicMaterial({color: 0xe0f7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false});
+        const shootingStarMat = new THREE.LineBasicMaterial({ color: 0xe0f7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
         const shootingStar = new THREE.Line(shootingStarGeo, shootingStarMat);
         scene.add(shootingStar);
 
@@ -1308,11 +1308,11 @@
             shootingStar.position.set(sx, sy, sz);
             shootingStar.material.opacity = 0;
             gsap.timeline()
-                .to(shootingStar.position, {x: sx + 3.5 + Math.random() * 3, y: sy - 2.5 - Math.random() * 2.5, z: sz + 2.5 + Math.random() * 2.5, duration: 1.1, ease: 'sine.inOut'}, 0)
-                .to(shootingStar.material, {opacity: 0.8, duration: 0.25, ease: 'power1.out'}, 0)
-                .to(shootingStar.material, {opacity: 0, duration: 0.85, ease: 'power2.in'}, 0.25);
+                .to(shootingStar.position, { x: sx + 3.5 + Math.random() * 3, y: sy - 2.5 - Math.random() * 2.5, z: sz + 2.5 + Math.random() * 2.5, duration: 1.1, ease: 'sine.inOut' }, 0)
+                .to(shootingStar.material, { opacity: 0.8, duration: 0.25, ease: 'power1.out' }, 0)
+                .to(shootingStar.material, { opacity: 0, duration: 0.85, ease: 'power2.in' }, 0.25);
         }
-        setInterval(() => {if (!isTransitioning) triggerShootingStar();}, 14000);
+        setInterval(() => { if (!isTransitioning) triggerShootingStar(); }, 14000);
 
         // Terrain
         const terrainGeo = new THREE.PlaneGeometry(30, 30, 64, 64);
@@ -1325,7 +1325,7 @@
         terrainGeo.computeVertexNormals();
         const terrain = new THREE.Mesh(
             terrainGeo,
-            new THREE.MeshStandardMaterial({color: 0x05070a, roughness: 0.92, metalness: 0.05})
+            new THREE.MeshStandardMaterial({ color: 0x05070a, roughness: 0.92, metalness: 0.05 })
         );
         terrain.receiveShadow = true; scene.add(terrain);
 
@@ -1336,7 +1336,7 @@
         // Geometry helpers
         function mergeGeometries(geos) {
             let tv = 0;
-            geos.forEach(g => {tv += g.attributes.position.count;});
+            geos.forEach(g => { tv += g.attributes.position.count; });
             const positions = new Float32Array(tv * 3), normals = new Float32Array(tv * 3), uvs = new Float32Array(tv * 2);
             let off = 0;
             geos.forEach(g => {
@@ -1377,13 +1377,13 @@
         // Grass instancing
         const grassCount = 1000;
         const grassGeo = createGrassClusterGeometry();
-        const grassMat = new THREE.MeshPhysicalMaterial({color: 0x012415, roughness: 0.35, side: THREE.DoubleSide, transmission: 0.25, clearcoat: 0.2, clearcoatRoughness: 0.1});
+        const grassMat = new THREE.MeshPhysicalMaterial({ color: 0x012415, roughness: 0.35, side: THREE.DoubleSide, transmission: 0.25, clearcoat: 0.2, clearcoatRoughness: 0.1 });
         const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, grassCount);
         grassMesh.castShadow = true; grassMesh.receiveShadow = true;
 
         const tinyCount = 350;
         const tinyGeo = createTinyFlowerGeometry();
-        const tinyMat = new THREE.MeshPhysicalMaterial({color: 0xffffff, roughness: 0.4, side: THREE.DoubleSide, transmission: 0.35, clearcoat: 0.15});
+        const tinyMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.4, side: THREE.DoubleSide, transmission: 0.35, clearcoat: 0.15 });
         const tinyFlowerMesh = new THREE.InstancedMesh(tinyGeo, tinyMat, tinyCount);
         tinyFlowerMesh.castShadow = true;
         const tinyColors = [new THREE.Color('#ff5588'), new THREE.Color('#ffaa00'), new THREE.Color('#00e5ff'), new THREE.Color('#ffffff')];
@@ -1394,7 +1394,7 @@
             dummy.position.set(px, py, pz); dummy.rotation.set(0, Math.random() * Math.PI, 0); dummy.scale.set(1, 1, 1);
             dummy.updateMatrix(); tinyFlowerMesh.setMatrixAt(i, dummy.matrix);
             tinyFlowerMesh.setColorAt(i, tinyColors[Math.floor(Math.random() * tinyColors.length)]);
-            tinyFlowerData.push({index: i, pos: new THREE.Vector3(px, py, pz), rotX: 0, rotZ: 0, windOffset: Math.random() * Math.PI * 2, windSpeed: 1.2 + Math.random() * 0.8});
+            tinyFlowerData.push({ index: i, pos: new THREE.Vector3(px, py, pz), rotX: 0, rotZ: 0, windOffset: Math.random() * Math.PI * 2, windSpeed: 1.2 + Math.random() * 0.8 });
         }
         scene.add(tinyFlowerMesh);
 
@@ -1407,7 +1407,7 @@
             fP.setZ(i, -Math.pow(ny - 0.5, 2) * 0.1 - Math.pow(x, 2) * 1.5);
         }
         foliageGeo.computeVertexNormals();
-        const foliageMesh = new THREE.InstancedMesh(foliageGeo, new THREE.MeshStandardMaterial({color: 0x152c17, roughness: 0.5, side: THREE.DoubleSide}), foliageCount);
+        const foliageMesh = new THREE.InstancedMesh(foliageGeo, new THREE.MeshStandardMaterial({ color: 0x152c17, roughness: 0.5, side: THREE.DoubleSide }), foliageCount);
         foliageMesh.castShadow = true;
         const grassData = [];
         for (let i = 0; i < grassCount; i++) {
@@ -1415,7 +1415,7 @@
             const py = getTerrainHeight(px, pz);
             dummy.position.set(px, py, pz); dummy.rotation.set(0, Math.random() * Math.PI, 0); dummy.scale.set(1, 1, 1);
             dummy.updateMatrix(); grassMesh.setMatrixAt(i, dummy.matrix);
-            grassData.push({index: i, pos: new THREE.Vector3(px, py, pz), rotX: dummy.rotation.x, rotZ: dummy.rotation.z, windOffset: Math.random() * Math.PI * 2, windSpeed: 1.1 + Math.random() * 0.8});
+            grassData.push({ index: i, pos: new THREE.Vector3(px, py, pz), rotX: dummy.rotation.x, rotZ: dummy.rotation.z, windOffset: Math.random() * Math.PI * 2, windSpeed: 1.1 + Math.random() * 0.8 });
         }
         scene.add(grassMesh);
         for (let i = 0; i < foliageCount; i++) {
@@ -1431,20 +1431,20 @@
         const fireflyCount = 25, firefliesGroup = new THREE.Group();
         scene.add(firefliesGroup);
         const fireflyGeo = new THREE.SphereGeometry(0.02, 8, 8);
-        const fireflyMat = new THREE.MeshBasicMaterial({color: 0xd4ff3b, transparent: true, blending: THREE.AdditiveBlending});
+        const fireflyMat = new THREE.MeshBasicMaterial({ color: 0xd4ff3b, transparent: true, blending: THREE.AdditiveBlending });
         const fireflies = [];
         for (let i = 0; i < fireflyCount; i++) {
             const mesh = new THREE.Mesh(fireflyGeo, fireflyMat.clone());
             const x = (Math.random() - 0.5) * 8, y = 0.2 + Math.random() * 2.2, z = (Math.random() - 0.5) * 8;
             mesh.position.set(x, y, z); firefliesGroup.add(mesh);
-            fireflies.push({mesh, basePos: new THREE.Vector3(x, y, z), seedX: Math.random() * 100, seedY: Math.random() * 100, seedZ: Math.random() * 100, speed: 0.35 + Math.random() * 0.45, pulseSpeed: 1.5 + Math.random() * 2, pulseOffset: Math.random() * Math.PI * 2});
+            fireflies.push({ mesh, basePos: new THREE.Vector3(x, y, z), seedX: Math.random() * 100, seedY: Math.random() * 100, seedZ: Math.random() * 100, speed: 0.35 + Math.random() * 0.45, pulseSpeed: 1.5 + Math.random() * 2, pulseOffset: Math.random() * Math.PI * 2 });
         }
 
         // Mist
         const mistCount = 10, mistGroup = new THREE.Group();
         scene.add(mistGroup);
         const mistTex = createMistTexture();
-        const mistMat = new THREE.MeshBasicMaterial({map: mistTex, transparent: true, blending: THREE.NormalBlending, depthWrite: false, side: THREE.DoubleSide});
+        const mistMat = new THREE.MeshBasicMaterial({ map: mistTex, transparent: true, blending: THREE.NormalBlending, depthWrite: false, side: THREE.DoubleSide });
         const mists = [];
         for (let i = 0; i < mistCount; i++) {
             const mesh = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), mistMat);
@@ -1453,13 +1453,13 @@
             mesh.position.set(x, y, z);
             const sc = 0.8 + Math.random() * 0.7; mesh.scale.set(sc, sc, 1);
             mistGroup.add(mesh);
-            mists.push({mesh, basePos: new THREE.Vector3(x, y, z), speed: 0.12 + Math.random() * 0.18, seedX: Math.random() * 50, seedZ: Math.random() * 50, baseRot: mesh.rotation.z});
+            mists.push({ mesh, basePos: new THREE.Vector3(x, y, z), speed: 0.12 + Math.random() * 0.18, seedX: Math.random() * 50, seedZ: Math.random() * 50, baseRot: mesh.rotation.z });
         }
 
         // Ripple
         const rippleMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(1, 1),
-            new THREE.MeshBasicMaterial({map: createRippleTexture(), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide})
+            new THREE.MeshBasicMaterial({ map: createRippleTexture(), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
         );
         rippleMesh.rotation.x = -Math.PI / 2; rippleMesh.position.set(0, -0.75, 0);
         scene.add(rippleMesh);
@@ -1471,9 +1471,9 @@
             rippleMesh.position.set(stage.flowerPos.x, -0.75, stage.flowerPos.z);
             rippleMesh.material.color.set(stage.fGlow);
             rippleMesh.scale.set(0.1, 0.1, 1); rippleMesh.material.opacity = 0.85;
-            gsap.timeline({onComplete: () => {isRippleAnimating = false; rippleMesh.material.opacity = 0;}})
-                .to(rippleMesh.scale, {x: 10, y: 10, duration: 1.8, ease: 'power1.out'}, 0)
-                .to(rippleMesh.material, {opacity: 0, duration: 1.8, ease: 'power2.out'}, 0);
+            gsap.timeline({ onComplete: () => { isRippleAnimating = false; rippleMesh.material.opacity = 0; } })
+                .to(rippleMesh.scale, { x: 10, y: 10, duration: 1.8, ease: 'power1.out' }, 0)
+                .to(rippleMesh.material, { opacity: 0, duration: 1.8, ease: 'power2.out' }, 0);
         }
         container.addEventListener('pointerdown', () => triggerFlowerRipple());
 
@@ -1490,12 +1490,12 @@
         }
         const petalCount = 80;
         const petalGeo = createHeartGeometry();
-        const petalMat = new THREE.MeshStandardMaterial({color: 0xff7ea2, emissive: new THREE.Color(0xff4a75), emissiveIntensity: 0.25, side: THREE.DoubleSide, roughness: 0.5});
+        const petalMat = new THREE.MeshStandardMaterial({ color: 0xff7ea2, emissive: new THREE.Color(0xff4a75), emissiveIntensity: 0.25, side: THREE.DoubleSide, roughness: 0.5 });
         const petalMesh = new THREE.InstancedMesh(petalGeo, petalMat, petalCount);
         const petalDummy = new THREE.Object3D();
         const petals = [];
         for (let i = 0; i < petalCount; i++) {
-            petals.push({pos: new THREE.Vector3((Math.random() - 0.5) * 10, 1 + Math.random() * 5, (Math.random() - 0.5) * 10), speedY: 0.005 + Math.random() * 0.01, speedX: 0.002 + Math.random() * 0.006, rotX: Math.random() * Math.PI, rotY: Math.random() * Math.PI, rotZ: Math.random() * Math.PI, rotSpeed: 0.01 + Math.random() * 0.02});
+            petals.push({ pos: new THREE.Vector3((Math.random() - 0.5) * 10, 1 + Math.random() * 5, (Math.random() - 0.5) * 10), speedY: 0.005 + Math.random() * 0.01, speedX: 0.002 + Math.random() * 0.006, rotX: Math.random() * Math.PI, rotY: Math.random() * Math.PI, rotZ: Math.random() * Math.PI, rotSpeed: 0.01 + Math.random() * 0.02 });
         }
         scene.add(petalMesh);
 
@@ -1521,7 +1521,7 @@
                 scene.add(this.group);
             }
 
-            getStemOffset(y, sh) {return Math.sin((y / sh) * Math.PI * 0.6) * 0.15;}
+            getStemOffset(y, sh) { return Math.sin((y / sh) * Math.PI * 0.6) * 0.15; }
 
             createPetalGeo(width, length, spineCurve, foldCurve, ruffleStrength = 0.04) {
                 const geo = new THREE.PlaneGeometry(width, length, 32, 32);
@@ -1552,7 +1552,7 @@
             }
 
             createSepals(target, count = 5, size = 0.18) {
-                const sepalMat = new THREE.MeshStandardMaterial({color: 0x1b4017, roughness: 0.6, side: THREE.DoubleSide});
+                const sepalMat = new THREE.MeshStandardMaterial({ color: 0x1b4017, roughness: 0.6, side: THREE.DoubleSide });
                 for (let i = 0; i < count; i++) {
                     const sepalGeo = new THREE.ConeGeometry(size * 0.35, size, 8);
                     sepalGeo.rotateX(Math.PI / 2.2);
@@ -1570,7 +1570,7 @@
             createThorns(stemMesh, count = 6) {
                 const thornGeo = new THREE.ConeGeometry(0.01, 0.04, 6);
                 thornGeo.rotateZ(-Math.PI / 3);
-                const thornMat = new THREE.MeshStandardMaterial({color: 0x2b180d, roughness: 0.8});
+                const thornMat = new THREE.MeshStandardMaterial({ color: 0x2b180d, roughness: 0.8 });
                 for (let i = 0; i < count; i++) {
                     const thorn = new THREE.Mesh(thornGeo, thornMat);
                     const y = 0.2 + (i / count) * 1.0;
@@ -1582,7 +1582,7 @@
 
             createFallenPetals(group, colorHex) {
                 const count = 5 + Math.floor(Math.random() * 4);
-                const mat = new THREE.MeshStandardMaterial({color: new THREE.Color(colorHex), roughness: 0.65, side: THREE.DoubleSide});
+                const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex), roughness: 0.65, side: THREE.DoubleSide });
                 for (let i = 0; i < count; i++) {
                     const p = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.06), mat);
                     const angle = Math.random() * Math.PI * 2, r = 0.08 + Math.random() * 0.28;
@@ -1596,14 +1596,14 @@
             build() {
                 const mound = new THREE.Mesh(
                     new THREE.CylinderGeometry(0.2, 0.35, 0.06, 16),
-                    new THREE.MeshStandardMaterial({color: 0x06080b, roughness: 0.95})
+                    new THREE.MeshStandardMaterial({ color: 0x06080b, roughness: 0.95 })
                 );
                 mound.position.y = 0.02; mound.receiveShadow = true;
                 this.group.add(mound);
                 this.createFallenPetals(this.group, this.stageConfig.fGlow);
 
                 const stemHeight = 1.45;
-                const stemMat = new THREE.MeshStandardMaterial({color: 0x1c3d1b, emissive: 0x051a08, emissiveIntensity: 0.3, roughness: 0.55, metalness: 0.05});
+                const stemMat = new THREE.MeshStandardMaterial({ color: 0x1c3d1b, emissive: 0x051a08, emissiveIntensity: 0.3, roughness: 0.55, metalness: 0.05 });
                 const stemGeo = new THREE.CylinderGeometry(0.022, 0.038, stemHeight, 24, 24);
                 const sPos = stemGeo.attributes.position;
                 for (let i = 0; i < sPos.count; i++) {
@@ -1620,9 +1620,9 @@
 
                 const leafTex = createPetalTexture('#041f0a', '#00e5a3', '#004a2c');
                 const leafGeo = this.createLeafGeo(0.15, 0.32);
-                const leafMat = new THREE.MeshPhysicalMaterial({map: leafTex, roughness: 0.35, side: THREE.DoubleSide, emissive: 0x002211, emissiveIntensity: 0.05, transmission: 0.3, clearcoat: 0.25, clearcoatRoughness: 0.1, ior: 1.35});
-                const petioleMat = new THREE.MeshStandardMaterial({color: 0x1c3d1b, roughness: 0.8});
-                const leafNodes = [{h: 0.32, a: 0.2}, {h: 0.62, a: 1.8}, {h: 0.92, a: 3.4}];
+                const leafMat = new THREE.MeshPhysicalMaterial({ map: leafTex, roughness: 0.35, side: THREE.DoubleSide, emissive: 0x002211, emissiveIntensity: 0.05, transmission: 0.3, clearcoat: 0.25, clearcoatRoughness: 0.1, ior: 1.35 });
+                const petioleMat = new THREE.MeshStandardMaterial({ color: 0x1c3d1b, roughness: 0.8 });
+                const leafNodes = [{ h: 0.32, a: 0.2 }, { h: 0.62, a: 1.8 }, { h: 0.92, a: 3.4 }];
                 for (const node of leafNodes) {
                     for (const angle of [node.a, node.a + Math.PI]) {
                         const lg = new THREE.Group();
@@ -1645,7 +1645,7 @@
 
                 this.createSepals(this.mainHead, 5, 0.18);
 
-                const builders = {rose: () => this.createRose(this.mainHead, 1.0), tulip: () => this.createTulip(this.mainHead, 1.0), lily: () => this.createLily(this.mainHead, 1.0), cherry: () => this.createCherry(this.mainHead, 1.0), lavender: () => this.createLavender(this.mainHead, 1.0), wild: () => this.createWildSunflower(this.mainHead, 1.05)};
+                const builders = { rose: () => this.createRose(this.mainHead, 1.0), tulip: () => this.createTulip(this.mainHead, 1.0), lily: () => this.createLily(this.mainHead, 1.0), cherry: () => this.createCherry(this.mainHead, 1.0), lavender: () => this.createLavender(this.mainHead, 1.0), wild: () => this.createWildSunflower(this.mainHead, 1.05) };
                 (builders[this.type] || builders.rose)();
 
                 this.createAuraGlow(this.mainHead, 1.0);
@@ -1660,15 +1660,15 @@
                 ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128);
                 const plane = new THREE.Mesh(
                     new THREE.PlaneGeometry(0.9 * scale, 0.9 * scale),
-                    new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(c), transparent: true, blending: THREE.AdditiveBlending, opacity: 0.45, depthWrite: false})
+                    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, blending: THREE.AdditiveBlending, opacity: 0.45, depthWrite: false })
                 );
                 plane.position.set(0, 0.25 * scale, -0.06); plane.scale.set(0.01, 0.01, 0.01);
                 target.add(plane);
-                this.petals.push({mesh: plane, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                this.petals.push({ mesh: plane, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
             }
 
             createStamens(target, scale, colorHex) {
-                const mat = new THREE.MeshBasicMaterial({color: new THREE.Color(colorHex)});
+                const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(colorHex) });
                 const len = 0.24 * scale;
                 for (let i = 0; i < 6; i++) {
                     const angle = (i / 6) * Math.PI * 2;
@@ -1711,7 +1711,7 @@
                         mesh.rotation.x = 0.24 + l * 0.13;
                         mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true;
                         target.add(mesh);
-                        this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1.4, 0.52), layer: l});
+                        this.petals.push({ mesh, targetScale: new THREE.Vector3(1, 1.4, 0.52), layer: l });
                     }
                 }
                 this.createStamens(target, scale, this.stageConfig.pColor);
@@ -1719,7 +1719,7 @@
 
             createTulip(target, scale) {
                 const geo = this.createPetalGeo(0.15 * scale * 1.8, 0.33 * scale, 0.16, 2.5, 0.025);
-                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#5c1e00', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.40, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.5, clearcoat: 0.12, ior: 1.35});
+                const mat = new THREE.MeshPhysicalMaterial({ map: createPetalTexture('#5c1e00', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.40, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.5, clearcoat: 0.12, ior: 1.35 });
                 for (let l = 0; l < 2; l++) {
                     for (let p = 0; p < 3; p++) {
                         const mesh = new THREE.Mesh(geo, mat);
@@ -1727,7 +1727,7 @@
                         mesh.position.set(Math.cos(angle) * 0.025, 0.04, Math.sin(angle) * 0.025);
                         mesh.rotation.y = -angle + Math.PI / 2; mesh.rotation.x = 0.12 - l * 0.08;
                         mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
-                        this.petals.push({mesh, targetScale: new THREE.Vector3(0.9, 1.55, 0.9), layer: l});
+                        this.petals.push({ mesh, targetScale: new THREE.Vector3(0.9, 1.55, 0.9), layer: l });
                     }
                 }
                 this.createStamens(target, scale, this.stageConfig.pColor);
@@ -1735,28 +1735,28 @@
 
             createLily(target, scale) {
                 const geo = this.createPetalGeo(0.13 * scale, 0.68 * scale, 0.28, 0.8, 0.03);
-                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#004444', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.30, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.6, clearcoat: 0.2, ior: 1.33});
+                const mat = new THREE.MeshPhysicalMaterial({ map: createPetalTexture('#004444', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.30, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.6, clearcoat: 0.2, ior: 1.33 });
                 for (let p = 0; p < 6; p++) {
                     const mesh = new THREE.Mesh(geo, mat);
                     const angle = (p / 6) * Math.PI * 2;
                     mesh.position.set(Math.cos(angle) * 0.035, 0.04, Math.sin(angle) * 0.035);
                     mesh.rotation.y = -angle + Math.PI / 2; mesh.rotation.x = 0.95;
                     mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
-                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1), layer: p % 2});
+                    this.petals.push({ mesh, targetScale: new THREE.Vector3(1, 1, 1), layer: p % 2 });
                 }
                 this.createStamens(target, scale, this.stageConfig.pColor);
             }
 
             createCherry(target, scale) {
                 const geo = this.createPetalGeo(0.12 * scale, 0.16 * scale, 0.08, 1.2, 0.02);
-                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#4d0014', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.45, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.65, clearcoat: 0.1, ior: 1.33});
+                const mat = new THREE.MeshPhysicalMaterial({ map: createPetalTexture('#4d0014', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.45, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.04, transmission: 0.65, clearcoat: 0.1, ior: 1.33 });
                 for (let p = 0; p < 5; p++) {
                     const mesh = new THREE.Mesh(geo, mat);
                     const angle = (p / 5) * Math.PI * 2;
                     mesh.position.set(Math.cos(angle) * 0.02, 0.03, Math.sin(angle) * 0.02);
                     mesh.rotation.y = -angle + Math.PI / 2; mesh.rotation.x = 0.38;
                     mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
-                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                    this.petals.push({ mesh, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
                 }
                 this.createStamens(target, scale, this.stageConfig.pColor);
             }
@@ -1764,38 +1764,38 @@
             createLavender(target, scale) {
                 const core = new THREE.Mesh(
                     new THREE.CylinderGeometry(0.12 * scale, 0.12 * scale, 0.03, 32),
-                    new THREE.MeshStandardMaterial({color: 0x1d1003, emissive: 0x2c1404, emissiveIntensity: 0.1, roughness: 0.95})
+                    new THREE.MeshStandardMaterial({ color: 0x1d1003, emissive: 0x2c1404, emissiveIntensity: 0.1, roughness: 0.95 })
                 );
                 core.position.y = 0.02; core.scale.set(0.01, 0.01, 0.01); core.castShadow = true; target.add(core);
-                this.petals.push({mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                this.petals.push({ mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
                 const geo = this.createPetalGeo(0.04 * scale, 0.35 * scale, 0.06, 1.8, 0.02);
-                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#3d1c02', '#ffd700', '#ff8c00'), roughness: 0.42, side: THREE.DoubleSide, emissive: new THREE.Color('#ffaa00'), emissiveIntensity: 0.04, transmission: 0.5, clearcoat: 0.08, ior: 1.33});
+                const mat = new THREE.MeshPhysicalMaterial({ map: createPetalTexture('#3d1c02', '#ffd700', '#ff8c00'), roughness: 0.42, side: THREE.DoubleSide, emissive: new THREE.Color('#ffaa00'), emissiveIntensity: 0.04, transmission: 0.5, clearcoat: 0.08, ior: 1.33 });
                 for (let p = 0; p < 24; p++) {
                     const mesh = new THREE.Mesh(geo, mat);
                     const angle = (p / 24) * Math.PI * 2, offR = (p % 2 === 0 ? 0.065 : 0.075) * scale;
                     mesh.position.set(Math.cos(angle) * offR, 0.02, Math.sin(angle) * offR);
                     mesh.rotation.y = -angle; mesh.rotation.x = p % 2 === 0 ? 0.12 : 0.22;
                     mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
-                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1.2), layer: 1});
+                    this.petals.push({ mesh, targetScale: new THREE.Vector3(1, 1, 1.2), layer: 1 });
                 }
             }
 
             createWildSunflower(target, scale) {
                 const core = new THREE.Mesh(
                     new THREE.CylinderGeometry(0.12 * scale, 0.12 * scale, 0.03, 32),
-                    new THREE.MeshStandardMaterial({color: 0xccff00, emissive: 0x88ff00, emissiveIntensity: 1.1, roughness: 0.8})
+                    new THREE.MeshStandardMaterial({ color: 0xccff00, emissive: 0x88ff00, emissiveIntensity: 1.1, roughness: 0.8 })
                 );
                 core.position.y = 0.02; core.scale.set(0.01, 0.01, 0.01); core.castShadow = true; target.add(core);
-                this.petals.push({mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0});
+                this.petals.push({ mesh: core, targetScale: new THREE.Vector3(1, 1, 1), layer: 0 });
                 const geo = this.createPetalGeo(0.04 * scale, 0.35 * scale, 0.06, 1.8, 0.02);
-                const mat = new THREE.MeshPhysicalMaterial({map: createPetalTexture('#444444', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.42, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.03, transmission: 0.5, clearcoat: 0.08, ior: 1.33});
+                const mat = new THREE.MeshPhysicalMaterial({ map: createPetalTexture('#444444', this.stageConfig.fColor, this.stageConfig.fGlow), roughness: 0.42, side: THREE.DoubleSide, emissive: new THREE.Color(this.stageConfig.fGlow), emissiveIntensity: 0.03, transmission: 0.5, clearcoat: 0.08, ior: 1.33 });
                 for (let p = 0; p < 24; p++) {
                     const mesh = new THREE.Mesh(geo, mat);
                     const angle = (p / 24) * Math.PI * 2, offR = (p % 2 === 0 ? 0.065 : 0.075) * scale;
                     mesh.position.set(Math.cos(angle) * offR, 0.02, Math.sin(angle) * offR);
                     mesh.rotation.y = -angle; mesh.rotation.x = p % 2 === 0 ? 0.12 : 0.22;
                     mesh.scale.set(0.01, 0.01, 0.01); mesh.castShadow = true; target.add(mesh);
-                    this.petals.push({mesh, targetScale: new THREE.Vector3(1, 1, 1.2), layer: 1});
+                    this.petals.push({ mesh, targetScale: new THREE.Vector3(1, 1, 1.2), layer: 1 });
                 }
             }
 
@@ -1846,9 +1846,9 @@
         const flowers = STAGES.map(stg => new ProceduralFlower(stg.flowerType, new THREE.Vector3(stg.flowerPos.x, stg.flowerPos.y, stg.flowerPos.z)));
 
         const extraRoses = [
-            {pos: new THREE.Vector3(-1.1, -0.8, 0.4), cfg: {fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'}},
-            {pos: new THREE.Vector3(1.1, -0.8, 0.4), cfg: {fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00'}},
-            {pos: new THREE.Vector3(0, -0.8, 0.1), cfg: {fColor: '#ffb7c5', fGlow: '#ff3b6b', pColor: '#ffff00'}}
+            { pos: new THREE.Vector3(-1.1, -0.8, 0.4), cfg: { fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00' } },
+            { pos: new THREE.Vector3(1.1, -0.8, 0.4), cfg: { fColor: '#ffe6eb', fGlow: '#ff0055', pColor: '#ffff00' } },
+            { pos: new THREE.Vector3(0, -0.8, 0.1), cfg: { fColor: '#ffb7c5', fGlow: '#ff3b6b', pColor: '#ffff00' } }
         ].map(c => {
             const f = new ProceduralFlower('rose', c.pos, c.cfg);
             f.updateGrowth(0); return f;
@@ -1937,8 +1937,8 @@
             const ctr = document.getElementById('plant-counter');
             ctr.textContent = `${plantedCount} flower${plantedCount !== 1 ? 's' : ''} planted`;
             ctr.style.opacity = 1;
-            const growObj = {p: 0};
-            gsap.to(growObj, {p: 1.0, duration: 7.0, ease: 'sine.out', onUpdate: () => flower.updateGrowth(growObj.p)});
+            const growObj = { p: 0 };
+            gsap.to(growObj, { p: 1.0, duration: 7.0, ease: 'sine.out', onUpdate: () => flower.updateGrowth(growObj.p) });
             spawnPlantParticles(x, y, z, cfg.fGlow);
         }
 
@@ -1947,13 +1947,13 @@
                 const geo = new THREE.SphereGeometry(0.016, 4, 4);
                 const col = new THREE.Color(colorHex);
                 col.offsetHSL(0, -0.1 + Math.random() * 0.2, -0.06 + Math.random() * 0.12);
-                const mat = new THREE.MeshBasicMaterial({color: col, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false});
+                const mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false });
                 const p = new THREE.Mesh(geo, mat);
                 p.position.set(x, y + 0.04, z);
                 scene.add(p);
                 const angle = Math.random() * Math.PI * 2, speed = 0.35 + Math.random() * 0.65;
-                gsap.to(p.position, {x: x + Math.cos(angle) * speed, y: y + 0.5 + Math.random() * 0.9, z: z + Math.sin(angle) * speed, duration: 1.1 + Math.random() * 0.5, ease: 'power2.out'});
-                gsap.to(mat, {opacity: 0, duration: 1.1 + Math.random() * 0.5, ease: 'power1.in', onComplete: () => {scene.remove(p); geo.dispose(); mat.dispose();}});
+                gsap.to(p.position, { x: x + Math.cos(angle) * speed, y: y + 0.5 + Math.random() * 0.9, z: z + Math.sin(angle) * speed, duration: 1.1 + Math.random() * 0.5, ease: 'power2.out' });
+                gsap.to(mat, { opacity: 0, duration: 1.1 + Math.random() * 0.5, ease: 'power1.in', onComplete: () => { scene.remove(p); geo.dispose(); mat.dispose(); } });
             }
         }
 
@@ -1980,7 +1980,7 @@
             cameraMode = mode;
             document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
 
-            const btnMap = {story: 'cambtn-story', free: 'cambtn-free', flower: 'cambtn-flower', top: 'cambtn-top', walk: 'cambtn-walk'};
+            const btnMap = { story: 'cambtn-story', free: 'cambtn-free', flower: 'cambtn-flower', top: 'cambtn-top', walk: 'cambtn-walk' };
             const btn = document.getElementById(btnMap[mode]);
             if (btn) btn.classList.add('active');
 
@@ -2014,7 +2014,7 @@
                     showCamHint('Flower Close-Up • Drag to Orbit 360° • Click any flower to focus');
                 } else if (mode === 'story') {
                     const stg = STAGES[currentStageIndex];
-                    gsap.to(camera.position, {x: stg.camPos.x, y: stg.camPos.y, z: stg.camPos.z, duration: 2.0, ease: 'power2.inOut'});
+                    gsap.to(camera.position, { x: stg.camPos.x, y: stg.camPos.y, z: stg.camPos.z, duration: 2.0, ease: 'power2.inOut' });
                     targetPanOffset.set(stg.camLook.x, stg.camLook.y, stg.camLook.z);
                     toast.classList.remove('visible');
                 }
@@ -2068,7 +2068,7 @@
             lastPointerY = e.clientY;
         });
 
-        window.addEventListener('mouseup', () => {isLeftDragging = false; isRightPanDragging = false;});
+        window.addEventListener('mouseup', () => { isLeftDragging = false; isRightPanDragging = false; });
         window.addEventListener('contextmenu', e => e.preventDefault());
 
         window.addEventListener('wheel', e => {
@@ -2094,7 +2094,7 @@
                 initTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                 initTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             }
-        }, {passive: true});
+        }, { passive: true });
 
         window.addEventListener('touchmove', e => {
             if (isWalkMode || isPlantMode) return;
@@ -2124,21 +2124,21 @@
                 targetPanOffset.z -= (-pdx * sinY + pdy * cosY) * 0.003;
                 initTouchMidX = midX; initTouchMidY = midY;
             }
-        }, {passive: true});
+        }, { passive: true });
 
-        window.addEventListener('touchend', () => {isLeftDragging = false; isRightPanDragging = false;});
+        window.addEventListener('touchend', () => { isLeftDragging = false; isRightPanDragging = false; });
 
         // ── WALK MODE CONTROLS ──
-        window.addEventListener('keydown', e => {keysPressed[e.code] = true;});
-        window.addEventListener('keyup', e => {keysPressed[e.code] = false;});
+        window.addEventListener('keydown', e => { keysPressed[e.code] = true; });
+        window.addEventListener('keyup', e => { keysPressed[e.code] = false; });
 
         function bindDpad(id, code) {
             const btn = document.getElementById(id);
             if (!btn) return;
-            btn.addEventListener('touchstart', e => {e.preventDefault(); keysPressed[code] = true;});
-            btn.addEventListener('touchend', e => {e.preventDefault(); keysPressed[code] = false;});
-            btn.addEventListener('mousedown', () => {keysPressed[code] = true;});
-            btn.addEventListener('mouseup', () => {keysPressed[code] = false;});
+            btn.addEventListener('touchstart', e => { e.preventDefault(); keysPressed[code] = true; });
+            btn.addEventListener('touchend', e => { e.preventDefault(); keysPressed[code] = false; });
+            btn.addEventListener('mousedown', () => { keysPressed[code] = true; });
+            btn.addEventListener('mouseup', () => { keysPressed[code] = false; });
         }
         bindDpad('dpad-up', 'KeyW');
         bindDpad('dpad-down', 'KeyS');
@@ -2195,7 +2195,7 @@
             }
         });
 
-        window.addEventListener('mouseup', () => {isWalkLooking = false;});
+        window.addEventListener('mouseup', () => { isWalkLooking = false; });
 
         // =====================================================================
         //  STAGE PROGRESS DOTS
@@ -2244,16 +2244,16 @@
                 }
             });
             document.getElementById('stage-title').classList.remove('active');
-            gsap.to('#stage-title', {opacity: 0, duration: 0.5});
-            gsap.to('#stage-sub', {opacity: 0, y: 20, duration: 0.8});
+            gsap.to('#stage-title', { opacity: 0, duration: 0.5 });
+            gsap.to('#stage-sub', { opacity: 0, y: 20, duration: 0.8 });
 
             targetPanOffset.set(stage.camLook.x, stage.camLook.y, stage.camLook.z);
 
             if (cameraMode === 'story') {
-                gsap.to(camera.position, {x: stage.camPos.x, y: stage.camPos.y, z: stage.camPos.z, duration: 6.8, ease: 'power2.inOut'});
+                gsap.to(camera.position, { x: stage.camPos.x, y: stage.camPos.y, z: stage.camPos.z, duration: 6.8, ease: 'power2.inOut' });
             }
 
-            const look = {x: camera.userData.lookX || 0, y: camera.userData.lookY || 0, z: camera.userData.lookZ || 0};
+            const look = { x: camera.userData.lookX || 0, y: camera.userData.lookY || 0, z: camera.userData.lookZ || 0 };
             gsap.to(look, {
                 x: stage.camLook.x, y: stage.camLook.y, z: stage.camLook.z,
                 duration: 6.8, ease: 'power2.inOut',
@@ -2267,42 +2267,42 @@
                     document.getElementById('stage-title').innerText = stage.title;
                     document.getElementById('stage-title').classList.add('active');
 
-                    gsap.to(scene.fog.color, {r: new THREE.Color(stage.fogColor).r, g: new THREE.Color(stage.fogColor).g, b: new THREE.Color(stage.fogColor).b, duration: 5.0});
-                    gsap.to(renderer, {duration: 5.0, onUpdate: () => renderer.setClearColor(scene.fog.color)});
+                    gsap.to(scene.fog.color, { r: new THREE.Color(stage.fogColor).r, g: new THREE.Color(stage.fogColor).g, b: new THREE.Color(stage.fogColor).b, duration: 5.0 });
+                    gsap.to(renderer, { duration: 5.0, onUpdate: () => renderer.setClearColor(scene.fog.color) });
 
                     const th = new THREE.Color(stage.skyHorizon);
-                    gsap.to(skyColors.horizon, {r: th.r, g: th.g, b: th.b, duration: 5.0, onUpdate: redrawSkyDome});
-                    gsap.to(sunLight, {intensity: stage.sunIntensity, duration: 5.0});
-                    gsap.to(sunLight.color, {r: new THREE.Color(stage.lightColor).r, g: new THREE.Color(stage.lightColor).g, b: new THREE.Color(stage.lightColor).b, duration: 5.0});
+                    gsap.to(skyColors.horizon, { r: th.r, g: th.g, b: th.b, duration: 5.0, onUpdate: redrawSkyDome });
+                    gsap.to(sunLight, { intensity: stage.sunIntensity, duration: 5.0 });
+                    gsap.to(sunLight.color, { r: new THREE.Color(stage.lightColor).r, g: new THREE.Color(stage.lightColor).g, b: new THREE.Color(stage.lightColor).b, duration: 5.0 });
 
-                    const go = {progress: 0};
+                    const go = { progress: 0 };
                     gsap.to(go, {
                         progress: 1.0, duration: 8.5, ease: 'sine.out',
                         onUpdate: () => activeFlower.updateGrowth(go.progress),
                         onComplete: () => {
                             document.getElementById('stage-sub').innerText = stage.sub;
-                            gsap.to('#stage-sub', {opacity: 1, y: 0, duration: 1.5});
+                            gsap.to('#stage-sub', { opacity: 1, y: 0, duration: 1.5 });
                             isTransitioning = false;
 
                             if (currentStageIndex < STAGES.length - 1) {
                                 const btn = document.getElementById('btn-next');
                                 btn.innerText = 'Walk Forward';
                                 btn.style.pointerEvents = 'auto';
-                                gsap.to('#btn-next', {opacity: 1, duration: 1.0, onComplete: () => btn.classList.add('pulsing')});
+                                gsap.to('#btn-next', { opacity: 1, duration: 1.0, onComplete: () => btn.classList.add('pulsing') });
                             } else {
                                 const btn = document.getElementById('btn-next');
                                 btn.innerText = 'Open Her Scroll';
                                 btn.style.pointerEvents = 'auto';
                                 btn.classList.remove('pulsing');
-                                gsap.to('#btn-next', {opacity: 1, duration: 1.5});
+                                gsap.to('#btn-next', { opacity: 1, duration: 1.5 });
                                 btn.onclick = openLoveLetter;
 
                                 document.getElementById('btn-breeze').style.display = 'inline-block';
                                 document.getElementById('btn-breeze').style.pointerEvents = 'auto';
-                                gsap.to('#btn-breeze', {opacity: 1, duration: 1.5});
+                                gsap.to('#btn-breeze', { opacity: 1, duration: 1.5 });
 
-                                const cg = {progress: 0};
-                                gsap.to(cg, {progress: 1.0, duration: 8.5, ease: 'sine.out', onUpdate: () => extraRoses.forEach(r => r.updateGrowth(cg.progress))});
+                                const cg = { progress: 0 };
+                                gsap.to(cg, { progress: 1.0, duration: 8.5, ease: 'sine.out', onUpdate: () => extraRoses.forEach(r => r.updateGrowth(cg.progress)) });
                             }
                         }
                     });
@@ -2317,14 +2317,14 @@
         function triggerPetalStorm() {
             if (isStormActive) return;
             isStormActive = true;
-            const tl = gsap.timeline({onComplete: () => isStormActive = false});
-            const s = {p: 0};
-            tl.to(s, {p: 1.0, duration: 2.2, ease: 'power2.out', onUpdate: () => windStormProgress = s.p})
-                .to(s, {p: 0.0, duration: 3.5, delay: 2.5, ease: 'sine.inOut', onUpdate: () => windStormProgress = s.p});
+            const tl = gsap.timeline({ onComplete: () => isStormActive = false });
+            const s = { p: 0 };
+            tl.to(s, { p: 1.0, duration: 2.2, ease: 'power2.out', onUpdate: () => windStormProgress = s.p })
+                .to(s, { p: 0.0, duration: 3.5, delay: 2.5, ease: 'sine.inOut', onUpdate: () => windStormProgress = s.p });
         }
 
-        function openLoveLetter() {document.getElementById('letter-modal').classList.add('active');}
-        function closeLoveLetter() {document.getElementById('letter-modal').classList.remove('active');}
+        function openLoveLetter() { document.getElementById('letter-modal').classList.add('active'); }
+        function closeLoveLetter() { document.getElementById('letter-modal').classList.remove('active'); }
 
         function nextStage() {
             if (isTransitioning) return;
@@ -2335,7 +2335,7 @@
         // =====================================================================
         //  MAIN RENDERING ANIMATION LOOP
         // =====================================================================
-        camera.userData = {lookX: 0, lookY: 1.5, lookZ: 0};
+        camera.userData = { lookX: 0, lookY: 1.5, lookZ: 0 };
         const clock = new THREE.Clock();
         const stars = scene.children.find(c => c instanceof THREE.Points);
 
@@ -2356,7 +2356,7 @@
                 flowers.forEach((fl, idx) => {
                     if (fl.growth > 0.01) {
                         const fp = STAGES[idx].flowerPos, dx = g.pos.x - fp.x, dz = g.pos.z - fp.z, dist = Math.hypot(dx, dz);
-                        if (dist < 0.95) {const force = (1 - dist / 0.95) * 0.42 * fl.growth, ang = Math.atan2(dx, dz); bendX += Math.sin(ang) * force; bendZ += Math.cos(ang) * force;}
+                        if (dist < 0.95) { const force = (1 - dist / 0.95) * 0.42 * fl.growth, ang = Math.atan2(dx, dz); bendX += Math.sin(ang) * force; bendZ += Math.cos(ang) * force; }
                     }
                 });
                 const wm = 1 + windStormProgress * 3.5;
@@ -2382,7 +2382,7 @@
                 p.pos.y -= p.speedY * pm;
                 p.pos.x += Math.sin(time * 0.8 + p.rotSpeed) * 0.005 * pm + windStormProgress * 0.035;
                 p.rotX += p.rotSpeed * pm; p.rotY += p.rotSpeed * 0.5 * pm;
-                if (p.pos.y < -1.0) {p.pos.y = 5; p.pos.x = (Math.random() - 0.5) * 12;}
+                if (p.pos.y < -1.0) { p.pos.y = 5; p.pos.x = (Math.random() - 0.5) * 12; }
                 petalDummy.position.copy(p.pos);
                 petalDummy.rotation.set(p.rotX, p.rotY, p.rotZ);
                 petalDummy.updateMatrix(); petalMesh.setMatrixAt(i, petalDummy.matrix);
